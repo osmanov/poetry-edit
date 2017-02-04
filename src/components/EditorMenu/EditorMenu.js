@@ -1,28 +1,44 @@
 import React from 'react'
 import { Editor, Raw } from 'slate'
+import position from 'selection-position'
 import Portal from 'react-portal'
+import styled from 'styled-components'
 import initialState from './state.json'
 import MenuList from 'components/MenuList'
 import MenuItem from 'components/MenuItem'
+
+const schema = {
+  marks: {
+    bold: props => <strong>{props.children}</strong>,
+    code: props => <code>{props.children}</code>,
+    italic: props => <em>{props.children}</em>,
+    underlined: props => <u>{props.children}</u>,
+  }
+}
+
+const Wrapper = styled.section`
+  position:absolute;
+  top:0;
+  left:0;
+  visibility:${props=>props.isHidden?'hidden':'visible'}
+`
+
 
 class EditorMenu extends React.Component {
   state = {
     state: Raw.deserialize(initialState, { terse: true })
   }
 
-  onOpen(){
-    console.log('OPEN')
+  onOpen = (portal) => {
+    this.setState({ menu: portal.firstChild })
   }
 
   onChange = (state) => {
     this.setState({ state })
   }
 
-  _pressTimer=null
-
-
-  _getFaker=(text)=>{
-    return (color,isActive)=><span>{text}{isActive && this.renderMarkButton('underlined', 'format_underlined','blue')}</span>
+  componentDidUpdate (){
+    this.updateMenu()
   }
 
   _hasMark = (type) => {
@@ -30,21 +46,31 @@ class EditorMenu extends React.Component {
     return state.marks.some(mark => mark.type == type)
   }
 
+  onClickMark = (e, type) => {
+    e.preventDefault()
+    e.persist()
+    let { state } = this.state
+
+    if(type){
+      state = state
+        .transform()
+        .toggleMark(type)
+        .apply()
+      this.setState({ state })
+    }else{
+      console.log('HELLO')
+    }
+
+
+  }
+
   _getItems = items => {
     return items.map((item,key)=>{
-      const isEdit = item.mark && this._hasMark(item.mark) //in edit current state
+      const isActive = item.mark && this._hasMark(item.mark) //in edit current state
 
-      const onMouseDown = e => {
-        e.persist()
-
-        this._pressTimer=setTimeout(()=> {
-          //this.onClickMark(e, type)
-        },1000)
-      }
-
-      const props={isEdit,label:item.label,onMouseDown}
+      const props={isActive,label:item.label,onMouseDown: e =>this.onClickMark(e, item.mark)}
       return <MenuItem {...props} key={key}>
-        {item.list && this._getList(item.list)}
+        {item.list && this._getList(Object.assign(item.list,{isHidden: true}))}
       </MenuItem>
     })
   }
@@ -56,62 +82,27 @@ class EditorMenu extends React.Component {
   }
 
   renderMenu = () => {
+    const { state:{isBlurred, isCollapsed} } = this.state
+
     return (
       <Portal isOpened onOpen={this.onOpen}>
-          {this._getList(this.props.provider)}
+          <Wrapper isHidden={isBlurred || isCollapsed}>
+            {this._getList(this.props.provider)}
+          </Wrapper>
       </Portal>
     )
   }
 
-  onClickMark = (e, type,isRemoveAction) => {
-    e.preventDefault()
-    if(e.persist)e.persist()
-    let { state } = this.state
-    console.log(e.target)
-    console.log(e.target.classList.contains('activator'))
 
-    const isFakerChild=e.target.classList.contains('activator')
 
-    if(isFakerChild){
-      return
-    }
+  updateMenu = () => {
+    const { menu, state } = this.state
+    if (!menu || state.isBlurred || state.isCollapsed) return
 
-    state = state
-      .transform()
-
-    if(isRemoveAction){
-      state = state
-        .removeMark(type)
-    }else{
-      state = state
-        .toggleMark(type)
-    }
-    state=state.apply()
-
-    this.setState({ state })
+    const rect = position()
+    menu.style.top = `${rect.top + window.scrollY - menu.offsetHeight}px`
+    menu.style.left = `${rect.left + window.scrollX - menu.offsetWidth / 2 + rect.width / 2}px`
   }
-
-  renderMarkButton(type, icon,color){
-    const isActive = this._hasMark(type)
-
-    const onMouseDown = e => {
-      e.persist()
-
-      this._pressTimer=setTimeout(()=> {
-        this.onClickMark(e, type)
-      },1000)
-    }
-
-    /*document.addEventListener('mouseup',(e)=>{
-      clearTimeout(this._pressTimer)
-      this.onClickMark(e, type,true)
-    })*/
-    const isFaker=(typeof icon === "function")
-
-    return <span data-active={isActive} style={{background:color}} className={isFaker && 'faker'} onMouseDown={onMouseDown}>{isFaker?icon(color,isActive):icon}</span>
-  }
-
-
 
   renderEditor = () => {
     return (
