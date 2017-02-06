@@ -38,20 +38,27 @@ class MenuList extends React.Component {
   }
 
   componentDidMount() {
-    console.log(this.props.root)
     const {axis,volume,root}=this.props
     if(!root){
-      const parentCoords = this._list.parentElement.getBoundingClientRect()
-
       if(axis==='x'){
         if(volume==='down'){
           this._list.style.top = 0
           this._list.style.left = `${- this._list.offsetWidth}px`
         }
+        if(volume==='up'){
+          this._list.style.top = 0
+          this._list.style.left = `${this._list.parentElement.offsetWidth}px`
+        }
+      }else if(axis==='y'){
+        if(volume==='down'){
+          this._list.style.top =  `${this._list.parentElement.offsetHeight}px`
+          this._list.style.left = 0
+        }
+        if(volume==='up'){
+          this._list.style.top =  `${- this._list.offsetHeight}px`
+          this._list.style.left = 0
+        }
       }
-
-      console.log(this._list)
-     // debugger
     }
   }
 

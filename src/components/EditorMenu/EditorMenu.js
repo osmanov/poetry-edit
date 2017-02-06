@@ -93,20 +93,6 @@ class EditorMenu extends React.Component {
     })
   }
 
-  _definePosition(list){
-    console.log(list)
-
-    const menu=this.state.menu
-    if(menu){
-      const menuStyle=getComputedStyle(menu)
-      console.log(menu)
-      console.log(menuStyle.left)
-    }
-
-
-    return true
-  }
-
   _depth=0
 
   _getList=({items,...other})=>{
@@ -175,3 +161,7 @@ export default EditorMenu;
  {this.renderMarkButton('code', 'code','orange')}
  {this.renderMarkButton('fake', this._getFaker('FAKER'),'pink')}
 * */
+
+
+
+

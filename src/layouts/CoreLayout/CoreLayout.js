@@ -17,7 +17,7 @@ const provider = {
         className:'',
         list:{
           className:'',//<--set classname if you want
-          volume:'down',
+          volume:'up',
           axis:'y',
           items:[{
             label:<span>ITALIC</span>,
