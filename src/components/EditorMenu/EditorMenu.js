@@ -69,7 +69,7 @@ class EditorMenu extends React.Component {
       const props={isActive,label:item.label,onMouseDown: e =>this.onClickMark(e, item.mark,item.list)}
 
       return <MenuItem {...props} key={key}>
-        {item.list && this._getList(Object.assign({isHidden: true}, item.list))}
+        {item.list && this._getList(Object.assign({isHidden: false}, item.list))}
       </MenuItem>
     })
   }

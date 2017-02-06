@@ -14,17 +14,22 @@ const Label = styled.div`
 class MenuItem extends React.Component {
 
   state={
-    children:this.props.children || null
+    //children:this.props.children || null
+    show:false
   }
 
   _onMouseEnter=()=>{
+    console.log('enter')
     this.setState({
-      children: this._toggleChildrenVisibility(false)
+      show:true
+      //children: this._toggleChildrenVisibility(false)
     })
   }
 
   _onMouseLeave=()=>{
+    console.log('leave')
     this.setState({
+      show:false
      // children: this._toggleChildrenVisibility(true)
     })
   }
@@ -48,8 +53,8 @@ class MenuItem extends React.Component {
         <Label isActive={isActive}>
           {label}
         </Label>
-        {this.state.children}
-        {/*this.props.children*/}
+        {/*this.state.children*/}
+        {this.state.show && this.props.children}
       </Wrapper>
     );
   }
