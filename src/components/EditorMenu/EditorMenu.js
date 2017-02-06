@@ -7,20 +7,10 @@ import initialState from './state.json'
 import MenuList from 'components/MenuList'
 import MenuItem from 'components/MenuItem'
 
-const schema = {
-  marks: {
-    bold: props => <strong>{props.children}</strong>,
-    code: props => <code>{props.children}</code>,
-    italic: props => <em>{props.children}</em>,
-    underlined: props => <u>{props.children}</u>,
-  }
-}
+
 
 const Wrapper = styled.section`
   position:absolute;
-  top:0;
-  left:0;
-  visibility:${props=>props.isHidden?'hidden':'visible'}
 `
 
 
@@ -37,7 +27,10 @@ class EditorMenu extends React.Component {
     this.setState({ state })
   }
 
-  componentDidUpdate (){
+  componentDidUpdate =()=>{
+    this.updateMenu()
+  }
+  componentDidMount = () => {
     this.updateMenu()
   }
 
@@ -46,10 +39,14 @@ class EditorMenu extends React.Component {
     return state.marks.some(mark => mark.type == type)
   }
 
-  onClickMark = (e, type) => {
-    e.preventDefault()
-    e.persist()
+  onClickMark = (e, type, withList) => {
+     e.preventDefault()
+    // e.persist()
     let { state } = this.state
+    // console.log(e.target)
+    // console.log(type)
+    // console.log(withList)
+
 
     if(type){
       state = state
@@ -57,25 +54,27 @@ class EditorMenu extends React.Component {
         .toggleMark(type)
         .apply()
       this.setState({ state })
+    }else if(withList){
+      // console.log('custom WITH list')
+      // console.log(type)
     }else{
-      console.log('HELLO')
+      // console.log('custom WITHOUT list')
     }
-
-
   }
 
   _getItems = items => {
     return items.map((item,key)=>{
       const isActive = item.mark && this._hasMark(item.mark) //in edit current state
 
-      const props={isActive,label:item.label,onMouseDown: e =>this.onClickMark(e, item.mark)}
+      const props={isActive,label:item.label,onMouseDown: e =>this.onClickMark(e, item.mark,item.list)}
+
       return <MenuItem {...props} key={key}>
-        {item.list && this._getList(Object.assign(item.list,{isHidden: true}))}
+        {item.list && this._getList(Object.assign({isHidden: true}, item.list))}
       </MenuItem>
     })
   }
 
-  _getList=({items, ...other})=>{
+  _getList=({items,...other})=>{
     return <MenuList {...other}>
       {this._getItems(items)}
     </MenuList>
@@ -83,12 +82,15 @@ class EditorMenu extends React.Component {
 
   renderMenu = () => {
     const { state:{isBlurred, isCollapsed} } = this.state
+    const isOpened=!(isBlurred || isCollapsed)
 
+    {/*<Portal isOpened={isOpened} onOpen={this.onOpen}>*/}
     return (
-      <Portal isOpened onOpen={this.onOpen}>
-          <Wrapper isHidden={isBlurred || isCollapsed}>
-            {this._getList(this.props.provider)}
-          </Wrapper>
+
+      <Portal isOpened={isOpened} onOpen={this.onOpen}>
+        <Wrapper>
+          {this._getList(Object.assign({isHidden:false},this.props.provider))}
+        </Wrapper>
       </Portal>
     )
   }
@@ -100,7 +102,7 @@ class EditorMenu extends React.Component {
     if (!menu || state.isBlurred || state.isCollapsed) return
 
     const rect = position()
-    menu.style.top = `${rect.top + window.scrollY - menu.offsetHeight}px`
+    menu.style.top = `${rect.top + window.scrollY + menu.offsetHeight}px`
     menu.style.left = `${rect.left + window.scrollX - menu.offsetWidth / 2 + rect.width / 2}px`
   }
 

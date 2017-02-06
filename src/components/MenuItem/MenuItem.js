@@ -12,23 +12,30 @@ const Label = styled.div`
 `
 
 class MenuItem extends React.Component {
+
   state={
-    isHidden:this.props.isHidden
+    children:this.props.children || null
   }
 
   _onMouseEnter=()=>{
     this.setState({
-      isHidden:true
+      children: this._toggleChildrenVisibility(false)
     })
   }
 
-  _renderChildren () {
+  _onMouseLeave=()=>{
+    this.setState({
+     // children: this._toggleChildrenVisibility(true)
+    })
+  }
+
+  _toggleChildrenVisibility (visibility) {
     if(!React.Children.count(this.props.children)) return null
     const result = []
-    console.log('***'+this.props.isHidden+'***')//TODO
+
     React.Children.forEach(this.props.children,
       (child, key) => {
-        if (child) result.push(React.cloneElement(child, Object.assign({}, child.props, {isHidden: this.state.isHidden, key})))
+        if (child) result.push(React.cloneElement(child, Object.assign({}, child.props, {isHidden: visibility, key})))
       })
 
     return result
@@ -37,11 +44,12 @@ class MenuItem extends React.Component {
   render() {
     const { onMouseDown, isActive, label, className} = this.props
     return (
-      <Wrapper onMouseDown={onMouseDown} onMouseEnter={this._onMouseEnter} className={className}>
+      <Wrapper onMouseDown={onMouseDown} onMouseEnter={this._onMouseEnter} onMouseLeave={this._onMouseLeave} className={className}>
         <Label isActive={isActive}>
           {label}
         </Label>
-        {this._renderChildren()}
+        {this.state.children}
+        {/*this.props.children*/}
       </Wrapper>
     );
   }
