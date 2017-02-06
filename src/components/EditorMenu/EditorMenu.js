@@ -2,15 +2,27 @@ import React from 'react'
 import { Editor, Raw } from 'slate'
 import position from 'selection-position'
 import Portal from 'react-portal'
-import styled from 'styled-components'
+import styled ,{css}from 'styled-components'
 import initialState from './state.json'
 import MenuList from 'components/MenuList'
 import MenuItem from 'components/MenuItem'
 
 
+/*
+*   ${(props)=>{
 
+ if(props.sub){
+ if(props.axis === 'y'){
+ return css`
+ top:
+ `
+ }
+ }
+ }}
+* */
 const Wrapper = styled.section`
   position:absolute;
+
 `
 
 
@@ -29,9 +41,12 @@ class EditorMenu extends React.Component {
 
   componentDidUpdate =()=>{
     this.updateMenu()
+    this._depth=0
   }
+
   componentDidMount = () => {
     this.updateMenu()
+    this._depth=0
   }
 
   _hasMark = (type) => {
@@ -62,21 +77,40 @@ class EditorMenu extends React.Component {
     }
   }
 
-  _getItems = items => {
+
+
+  _getItems = (items, depth) => {
+    console.log(depth)
     return items.map((item,key)=>{
       const isActive = item.mark && this._hasMark(item.mark) //in edit current state
 
       const props={isActive,label:item.label,onMouseDown: e =>this.onClickMark(e, item.mark,item.list)}
 
-      return <MenuItem {...props} key={key}>
-        {item.list && this._getList(Object.assign({isHidden: false}, item.list))}
+      return <MenuItem {...props} key={depth+''+key}>
+        {item.list && <Wrapper position={this._definePosition(Object.assign({depth},item.list))}>{this._getList(Object.assign({isHidden: false}, item.list))}</Wrapper>}
       </MenuItem>
     })
   }
 
+  _definePosition(list){
+    console.log(list)
+
+    const menu=this.state.menu
+    if(menu){
+      const menuStyle=getComputedStyle(menu)
+      console.log(menu)
+      console.log(menuStyle.left)
+    }
+
+
+    return true
+  }
+
+  _depth=0
+
   _getList=({items,...other})=>{
     return <MenuList {...other}>
-      {this._getItems(items)}
+      {this._getItems(items,this._depth++)}
     </MenuList>
   }
 

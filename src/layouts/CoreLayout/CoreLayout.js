@@ -22,7 +22,26 @@ const provider = {
           items:[{
             label:<span>ITALIC</span>,
             className:'',
-            mark:'italic'
+            mark:'italic',
+            list:{
+              volume:'down',
+              axis:'x',
+              className:'',
+              items:[
+                {
+                  label:<span>SUB_ITALIC_1</span>,
+                  className:'',
+                },
+                {
+                  label:<span>SUB_ITALIC_2</span>,
+                  className:'',
+                },
+                {
+                  label:<span>SUB_ITALIC_3</span>,
+                  className:'',
+                }
+              ]
+            }
           },
             {
               label:<span>SAY_SOMETHING</span>,

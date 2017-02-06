@@ -30,7 +30,6 @@ class MenuItem extends React.Component {
     console.log('leave')
     this.setState({
       show:false
-     // children: this._toggleChildrenVisibility(true)
     })
   }
 
