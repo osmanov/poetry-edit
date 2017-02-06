@@ -56,7 +56,8 @@ class EditorMenu extends React.Component {
 
   onClickMark = (e, type, withList) => {
      e.preventDefault()
-    // e.persist()
+     e.persist()
+    e.stopPropagation()//TODO remove it and check active class
     let { state } = this.state
     // console.log(e.target)
     // console.log(type)
