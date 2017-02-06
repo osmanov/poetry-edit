@@ -87,7 +87,7 @@ class EditorMenu extends React.Component {
       const props={isActive,label:item.label,onMouseDown: e =>this.onClickMark(e, item.mark,item.list)}
 
       return <MenuItem {...props} key={depth+''+key}>
-        {item.list && <Wrapper position={this._definePosition(Object.assign({depth},item.list))}>{this._getList(Object.assign({isHidden: false}, item.list))}</Wrapper>}
+        {item.list && this._getList(Object.assign({isHidden: false}, item.list))}
       </MenuItem>
     })
   }
@@ -120,11 +120,8 @@ class EditorMenu extends React.Component {
 
     {/*<Portal isOpened={isOpened} onOpen={this.onOpen}>*/}
     return (
-
       <Portal isOpened={isOpened} onOpen={this.onOpen}>
-        <Wrapper>
-          {this._getList(Object.assign({isHidden:false},this.props.provider))}
-        </Wrapper>
+          {this._getList(Object.assign({isHidden:false,root:true},this.props.provider))}
       </Portal>
     )
   }
