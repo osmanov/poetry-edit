@@ -85,7 +85,7 @@ class EditorMenu extends React.Component {
     return items.map((item,key)=>{
       const isActive = item.mark && this._hasMark(item.mark) //in edit current state
 
-      const props={isActive,label:item.label,onMouseDown: e =>this.onClickMark(e, item.mark,item.list)}
+      const props={label:item.label,onMouseDown: e =>this.onClickMark(e, item.mark,item.list),className:isActive?`${item.className} ${item.className}-active`:`${item.className}`}
 
       return <MenuItem {...props} key={depth+''+key}>
         {item.list && this._getList(Object.assign({isHidden: false}, item.list))}

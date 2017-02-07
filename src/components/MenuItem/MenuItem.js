@@ -7,9 +7,7 @@ const Wrapper = styled.li`
     cursor:pointer;
 `
 
-const Label = styled.div`
-    background:${props => props.isActive ? 'orange': ''}
-`
+
 
 class MenuItem extends React.Component {
 
@@ -22,12 +20,11 @@ class MenuItem extends React.Component {
     console.log('enter')
     this.setState({
       show:true
-      //children: this._toggleChildrenVisibility(false)
     })
   }
 
   _onMouseLeave=()=>{
-    console.log('leave')
+    // debugger
     this.setState({
       show:false
     })
@@ -46,13 +43,12 @@ class MenuItem extends React.Component {
   }
 
   render() {
-    const { onMouseDown, isActive, label, className} = this.props
+    const { onMouseDown, label, className} = this.props
     return (
       <Wrapper onMouseDown={onMouseDown} onMouseEnter={this._onMouseEnter} onMouseLeave={this._onMouseLeave} className={className}>
-        <Label isActive={isActive}>
+        <div>
           {label}
-        </Label>
-        {/*this.state.children*/}
+        </div>
         {this.state.show && this.props.children}
       </Wrapper>
     );
@@ -65,7 +61,6 @@ MenuItem.propTypes = {
   onMouseDown: React.PropTypes.func.isRequired,
   className: React.PropTypes.string,
   children: React.PropTypes.element,
-  isActive: React.PropTypes.bool
 }
 
 export default MenuItem;
