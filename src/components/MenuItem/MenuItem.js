@@ -17,33 +17,30 @@ class MenuItem extends React.Component {
   }
 
   _onMouseEnter=()=>{
-    console.log('enter')
+    console.log('ENTER')
     this.setState({
       show:true
     })
   }
 
   _onMouseLeave=()=>{
-    // debugger
+//TODO from here parent siblings should listen
     this.setState({
-      show:false
+    //  show:false
     })
   }
 
-  _toggleChildrenVisibility (visibility) {
-    if(!React.Children.count(this.props.children)) return null
-    const result = []
-
-    React.Children.forEach(this.props.children,
-      (child, key) => {
-        if (child) result.push(React.cloneElement(child, Object.assign({}, child.props, {isHidden: visibility, key})))
-      })
-
-    return result
+  shouldComponentUpdate(nextProps, nextState){
+    console.log('-------')
+    console.log('next-->'+nextState.show)
+    console.log('this-->'+this.state.show)
+    console.log('-------')
+    return !(nextState.show===this.state.show)
   }
 
   render() {
     const { onMouseDown, label, className} = this.props
+
     return (
       <Wrapper onMouseDown={onMouseDown} onMouseEnter={this._onMouseEnter} onMouseLeave={this._onMouseLeave} className={className}>
         <div>
