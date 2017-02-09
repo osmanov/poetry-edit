@@ -36,7 +36,10 @@ class MenuInfinityList extends React.Component {
 
   componentDidMount() {
     const {axis,volume,root}=this.props
+    console.log(this.props)
     if(!root){
+      debugger
+
       if(axis==='x'){
         if(volume==='down'){
           this._list.style.top = 0

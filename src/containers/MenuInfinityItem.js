@@ -22,7 +22,7 @@ class MenuItem extends React.Component {
     return (
       <Wrapper onMouseEnter={() => onMouseEnter(item)} onMouseLeave={this._onMouseLeave} className={className}>
         <div>
-          {item.item.label}
+          {item.label}
         </div>
         {this.props.children}
       </Wrapper>

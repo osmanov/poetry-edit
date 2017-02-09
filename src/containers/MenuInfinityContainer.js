@@ -57,7 +57,7 @@ const items={
 
 
 const list ={
-  depth:0,
+  id:0,
   className:'menuContainer',
   volume:'up',
   axis:'x',
@@ -71,6 +71,7 @@ const list ={
     {
       id: 7,
       list: {
+        id:2,
         className:'menuContainer2',
         volume:'down',
         axis:'y',
@@ -114,11 +115,23 @@ export default class MenuInfinityContainer extends React.Component {
   constructor(props) {
     super(props)
 
+    const lists=[
+      {
+        id:list.id,
+        className:list.className,
+        volume:list.volume,
+        axis:list.axis,
+        items:list.items
+      }
+    ]
+
+    let listsNephews={}
+    listsNephews[list.id]=[]
+    
     const initialState = {
       items,
-      list,
-      isTestClicked:false,
-      itemOnEnter:null
+      lists,
+      listsNephews
     }
 
 

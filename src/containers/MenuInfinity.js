@@ -4,14 +4,14 @@ import { actionCreators } from './redux'
 import { createSelector } from 'reselect'
 import MenuInfinityItem from './MenuInfinityItem'
 import MenuInfinityList from './MenuInfinityList'
-
+/*
 const listSelector = state => state.list.items
-const itemsSelector = state => state.items
+const itemSelector = state => state.items
 const enteredSelector = state => state.itemOnEnter
 
 const subtotalSelector = createSelector(
   listSelector,
-  itemsSelector,
+  itemSelector,
   (list,items)=>{
     return list.map(item=>{
       return{
@@ -28,35 +28,68 @@ const entSelector = createSelector(
   listSelector,
   (items,entered,list)=>{
     console.log(entered)
-//set item to entred
-
+    console.log('hello')
     return null
+  }
+)*/
+
+const itemsSelector = state => state.items
+const listsSelector = state => state.lists
+
+const currentListsSelector = createSelector(
+  itemsSelector,
+  listsSelector,
+  (items,lists)=>{
+    return lists.map(list => {
+      const listItems=list.items.map(item=>{
+       return {
+         ...items[item.id],
+         childList:item.list || null
+       }
+      })
+      return Object.assign({},list,{items:listItems})
+    })
   }
 )
 
-
-
 const mapStateToProps = state => {
   return {
-    items:subtotalSelector(state),
-    list:state.list,
-    entered:entSelector(state)
+    lists:currentListsSelector(state)
   }
 }
 
 class MenuInfinity extends React.Component{
 
-  _getItems = () => {
-    const {items, itemOnEnter}=this.props
-    return items.map((item,key)=>{
-      return <MenuInfinityItem className={item.item.className} onMouseEnter={itemOnEnter} item={item} key={key}/>
+  _getItems = (items) => {
+    const {addNephewsToLists, addList}=this.props
+    return items.map(item=>{
+      return <MenuInfinityItem className={item.className} onMouseEnter={()=>{
+        if(item.childList){
+          addNephewsToLists(item.childList.id)
+          addList(item.childList)
+        }
+
+      }} item={item} key={item.id}/>
     })
   }
 
-  render(){
-    return <MenuInfinityList className={this.props.list.className}>
-      {this._getItems()}
+  _getList = (list,isRoot) => {//TODO from here
+    return <MenuInfinityList root={isRoot} className={list.className} key={list.id}>
+      {this._getItems(list.items)}
     </MenuInfinityList>
+  }
+
+  render(){
+    const {lists}=this.props
+
+    return <div>
+      {lists.map(list => {
+        return this._getList(list,true)
+      })}
+    </div>
+
+
+
   }
 }
 
