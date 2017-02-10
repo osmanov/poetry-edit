@@ -72,25 +72,29 @@ const inputData={
   ]
 }
 
-const result=spreadLists(inputData.items,[{
-  id:inputData.id
-}])
-/*
+const result=spreadLists(inputData.items,{
+  lists:[{
+    id:inputData.id
+  }],
+  itemListRelation:{}
+})
+
 test('spreadLists result is consisted from two properties', t => {
   t.is(Object.keys(result).length,2)
 })
-*/
+
 test('spreadLists returns lists property with right length', t => {
-  t.is(result.length,7)
+  t.is(result.lists.length,7)
 })
-/*
+
 test('spreadLists returns itemListRelation property with right value', t => {
   t.deepEqual(result.itemListRelation,{
     7:2,
     6:125,
     16:225,
     8:25,
-    46:215
+    46:215,
+    146:1215
   })
 })
-*/
+
