@@ -6,7 +6,7 @@ import createLogger from 'redux-logger'
 import thunk from 'redux-thunk'
 
 import MenuInfinity from './MenuInfinity'
-
+import {spreadLists} from './utils'
 const items={
   0:{
     id:0,
@@ -69,115 +69,80 @@ const list ={
       id: 1
     },
     {
-      id: 7,
+      id: 2,
       list: {
-        id:2,
+        id:1,
         className:'menuContainer2',
         volume:'down',
         axis:'y',
         items:[
           {
-            id: 6
+            id: 3
           },
           {
-            id: 5,
+            id: 4,
             list: {
-              id:3,
+              id:2,
               className:'menuContainer2',
               volume:'up',
               axis:'x',
               items:[
                 {
-                  id: 4,
+                  id: 5,
                   list: {
-                    id:20,
+                    id:3,
                     className:'menuContainer2',
-                    volume:'up',
-                    axis:'y'
+                    volume:'down',
+                    axis:'y',
+                    items:[
+                      {
+                        id: 6
+                      }
+                    ]
                   }
                 },
                 {
-                  id: 1
+                  id: 7
                 }
               ]
             }
           }
         ]
       }
-    },
-    {
-      id: 2
-    },
-    {
-      id: 3
     }
   ]
 }
 const logger = createLogger()
 
-//TODO move to utils TODO TEST
-function spreadLists(nephews,result){
-  const {itemListRelation, lists}=result
 
-  for(let j = 0; j < nephews.length; j++){
-    const item=nephews[j]
-
-    if (item.list) {
-
-      const cloneRelation = Object.assign({}, itemListRelation)
-      cloneRelation[item.id] = item.list.id
-
-      let list = {}
-      const keys = Object.keys(item.list)
-
-      for (let i = 0; i <= keys.length; i++) {
-        const key = keys[i]
-
-        if (key === 'items') {
-          let clone = lists.slice()
-          clone.push(list)
-
-          return spreadLists(item.list[key], {itemListRelation:cloneRelation, lists:clone})
-        }
-        list[key] = item.list[key]
-      }
-
-    }
-  }
-  return result
+const initStructure = {
+  id: list.id,
+  className: list.className,
+  volume: list.volume,
+  axis: list.axis,
+  itemIdsOrder: list.items.map(item=>item.id)
 }
+
+const listsMount = spreadLists(list.items, {
+  lists: [{...initStructure}],
+  itemListRelation: {}
+})
 
 export default class MenuInfinityContainer extends React.Component {
   constructor(props) {
     super(props)
 
-
-
-    const lists=spreadLists(list.items,{lists:[{
-      id:list.id,
-      className:list.className,
-      volume:list.volume,
-      axis:list.axis
-    }],itemListRelation:{}})
-
-console.log(lists)
-
-    /*const lists=[
-      {
-        id:list.id,
-        className:list.className,
-        volume:list.volume,
-        axis:list.axis
-      },
-    ]*/
-
-    let listsNephews={}
-    listsNephews[list.id]=[]
+    let listListRelation={}
+    listListRelation[list.id]=[]
 
     const initialState = {
-      items,
-      lists:[],
-      listsNephews
+      items, // const
+      lists: listsMount.lists, // const
+      relations: {
+        itemList: listsMount.itemListRelation, //const
+        listLists: listListRelation // dynamic
+      },
+      structure: {...initStructure} // dynamic
     }
 
 

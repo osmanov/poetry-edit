@@ -34,13 +34,16 @@ const entSelector = createSelector(
 )*/
 
 const itemsSelector = state => state.items
-const listsSelector = state => state.lists
+const structureSelector = state => state.structure
 
 const currentListsSelector = createSelector(
   itemsSelector,
-  listsSelector,
-  (items,lists)=>{
-    return lists.map(list => {
+  structureSelector,
+  (items,structure)=>{
+
+
+
+    return structure.map(list => {
       const listItems=list.items.map(item=>{
        return {
          ...items[item.id],
@@ -54,7 +57,9 @@ const currentListsSelector = createSelector(
 
 const mapStateToProps = state => {
   return {
-    lists:currentListsSelector(state)
+    // structure:currentListsSelector(state)
+    structure: state.structure
+    //lists:state.lists
   }
 }
 
@@ -80,6 +85,9 @@ class MenuInfinity extends React.Component{
   }
 
   render(){
+    console.log(this.props.structure)
+    return null
+
     const {lists}=this.props
 
     return <div>
