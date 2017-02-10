@@ -82,12 +82,19 @@ const list ={
           {
             id: 5,
             list: {
+              id:3,
               className:'menuContainer2',
               volume:'up',
               axis:'x',
               items:[
                 {
-                  id: 0
+                  id: 4,
+                  list: {
+                    id:20,
+                    className:'menuContainer2',
+                    volume:'up',
+                    axis:'y'
+                  }
                 },
                 {
                   id: 1
@@ -103,34 +110,73 @@ const list ={
     },
     {
       id: 3
-    },
-    {
-      id: 4
     }
   ]
 }
 const logger = createLogger()
 
+//TODO move to utils TODO TEST
+function spreadLists(nephews,result){
+  const {itemListRelation, lists}=result
+
+  for(let j = 0; j < nephews.length; j++){
+    const item=nephews[j]
+
+    if (item.list) {
+
+      const cloneRelation = Object.assign({}, itemListRelation)
+      cloneRelation[item.id] = item.list.id
+
+      let list = {}
+      const keys = Object.keys(item.list)
+
+      for (let i = 0; i <= keys.length; i++) {
+        const key = keys[i]
+
+        if (key === 'items') {
+          let clone = lists.slice()
+          clone.push(list)
+
+          return spreadLists(item.list[key], {itemListRelation:cloneRelation, lists:clone})
+        }
+        list[key] = item.list[key]
+      }
+
+    }
+  }
+  return result
+}
+
 export default class MenuInfinityContainer extends React.Component {
   constructor(props) {
     super(props)
 
-    const lists=[
+
+
+    const lists=spreadLists(list.items,{lists:[{
+      id:list.id,
+      className:list.className,
+      volume:list.volume,
+      axis:list.axis
+    }],itemListRelation:{}})
+
+console.log(lists)
+
+    /*const lists=[
       {
         id:list.id,
         className:list.className,
         volume:list.volume,
-        axis:list.axis,
-        items:list.items
-      }
-    ]
+        axis:list.axis
+      },
+    ]*/
 
     let listsNephews={}
     listsNephews[list.id]=[]
-    
+
     const initialState = {
       items,
-      lists,
+      lists:[],
       listsNephews
     }
 
