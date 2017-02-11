@@ -4,100 +4,97 @@ import { actionCreators } from './redux'
 import { createSelector } from 'reselect'
 import MenuInfinityItem from './MenuInfinityItem'
 import MenuInfinityList from './MenuInfinityList'
-/*
-const listSelector = state => state.list.items
-const itemSelector = state => state.items
-const enteredSelector = state => state.itemOnEnter
 
-const subtotalSelector = createSelector(
-  listSelector,
-  itemSelector,
-  (list,items)=>{
-    return list.map(item=>{
-      return{
-        item:items[item.id],
-        list:item.list||null
-      }
+const itemsSelector = state => state.items
+const listsSelector = state => state.lists
+const structureSelector = state => state.structure
+const relationItemListSelector = state => state.relations.itemList
+const relationListListsSelector = state => state.relations.listLists
+// const listSelector = state => state.list
+
+const fillItemsListsSelector = createSelector(
+  itemsSelector,
+  listsSelector,
+  (items,lists)=>{
+    return lists.map(list=>{
+      const filledItems=list.itemIdsOrder.map(id=>items[id])
+      return {...list, items: filledItems}
     })
   }
 )
 
-const entSelector = createSelector(
-  subtotalSelector,
-  enteredSelector,
-  listSelector,
-  (items,entered,list)=>{
-    console.log(entered)
-    console.log('hello')
-    return null
-  }
-)*/
-
-const itemsSelector = state => state.items
-const structureSelector = state => state.structure
-
 const currentListsSelector = createSelector(
   itemsSelector,
+  fillItemsListsSelector,
+  relationItemListSelector,
+  relationListListsSelector,
   structureSelector,
-  (items,structure)=>{
+  (items, lists, relationItemList, relationListLists, structure)=> {
+    if(structure.exciterItem===null){
+      return lists[structure.id]
+    }
 
+//     structure
+//
+// debugger
+    /*
+    * list: {
+     id:0,
+     exciterItem:{
+     id:2,
+     list:{
+     id:1,
+     exciterItem:null
+     }
+     },
+     }
+    * */
 
+    /*function foo(list,res) {
+      const structure=Object.keys(list)
+      for(let i=0;i<structure.length;i++){
+        const key=structure[i]
+        if(list[key] && structure[i]==='exciterItem'){
+          foo(list[key])
+        }else{
 
-    return structure.map(list => {
-      const listItems=list.items.map(item=>{
-       return {
-         ...items[item.id],
-         childList:item.list || null
-       }
-      })
-      return Object.assign({},list,{items:listItems})
-    })
+        }
+      }
+    }*/
+
+    return {}
   }
 )
 
 const mapStateToProps = state => {
   return {
-    // structure:currentListsSelector(state)
-    structure: state.structure
-    //lists:state.lists
+    structure: structureSelector(state),
+    relationItemList:relationItemListSelector(state)
   }
 }
 
 class MenuInfinity extends React.Component{
 
-  _getItems = (items) => {
-    const {addNephewsToLists, addList}=this.props
-    return items.map(item=>{
-      return <MenuInfinityItem className={item.className} onMouseEnter={()=>{
-        if(item.childList){
-          addNephewsToLists(item.childList.id)
-          addList(item.childList)
-        }
+  _getItems = (items,exciterItem) => {
+    const {addListListsRelation,updateStructure, relationItemList}=this.props
 
-      }} item={item} key={item.id}/>
+    return items.map(item=>{
+      return <MenuInfinityItem addListListsRelation={addListListsRelation} updateStructure={updateStructure} relationItemList={relationItemList} className={item.className} item={item} key={item.id}>
+        {(exciterItem && exciterItem.id===item.id && this._getList(exciterItem.list)) || null}
+      </MenuInfinityItem>
     })
   }
 
-  _getList = (list,isRoot) => {//TODO from here
-    return <MenuInfinityList root={isRoot} className={list.className} key={list.id}>
-      {this._getItems(list.items)}
+  _getList = (list,isRoot) => {
+    return <MenuInfinityList axis={list.axis}  volume={list.volume} root={isRoot} className={list.className} key={list.id}>
+      {this._getItems(list.items,list.exciterItem)}
     </MenuInfinityList>
   }
 
   render(){
-    console.log(this.props.structure)
-    return null
+    const {structure}=this.props
 
-    const {lists}=this.props
-
-    return <div>
-      {lists.map(list => {
-        return this._getList(list,true)
-      })}
-    </div>
-
-
-
+    return this._getList(structure,true)
   }
 }
 

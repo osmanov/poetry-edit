@@ -24,7 +24,7 @@ class MenuInfinityList extends React.Component {
   static defaultProps = {
     axis:'x',
     volume:'up',
-    root:true
+    root:false
   }
 
   static propTypes = {

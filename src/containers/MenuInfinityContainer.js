@@ -7,7 +7,7 @@ import thunk from 'redux-thunk'
 
 import MenuInfinity from './MenuInfinity'
 import {spreadLists} from './utils'
-const items={
+export const items={
   0:{
     id:0,
     label:<i className="fa fa-bold" aria-hidden="true"></i>,
@@ -120,7 +120,8 @@ const initStructure = {
   className: list.className,
   volume: list.volume,
   axis: list.axis,
-  itemIdsOrder: list.items.map(item=>item.id)
+  itemIdsOrder: list.items.map(item=>item.id),
+  items: list.items.map(item=>items[item.id])
 }
 
 const listsMount = spreadLists(list.items, {
@@ -142,7 +143,10 @@ export default class MenuInfinityContainer extends React.Component {
         itemList: listsMount.itemListRelation, //const
         listLists: listListRelation // dynamic
       },
-      structure: {...initStructure} // dynamic
+      structure: {
+        ...initStructure,
+        exciterItem:null
+      } // dynamic
     }
 
 

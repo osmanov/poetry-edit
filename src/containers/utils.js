@@ -1,3 +1,5 @@
+import {items as itemCollection} from './MenuInfinityContainer'
+
 export function spreadLists(nephews, result) {
   let clone = {
     lists: result.lists.slice(),
@@ -16,6 +18,7 @@ export function spreadLists(nephews, result) {
         const key = keys[i]
         if (key === 'items') {
           list.itemIdsOrder = item.list[key].map(item=>item.id)
+          list.items = item.list[key].map(item=>itemCollection[item.id])
 
           const cloneRelation = Object.assign({}, clone.itemListRelation)
           cloneRelation[item.id] = item.list.id
