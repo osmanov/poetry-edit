@@ -68,10 +68,15 @@ const currentListsSelector = createSelector(
 
 const mapStateToProps = state => {
   return {
-    structure: structureSelector(state),
-    relationItemList:relationItemListSelector(state)
+    // structure: structureSelector(state),
+    // relationItemList:relationItemListSelector(state)
+    relationItemList:state.relations.itemList,
+    structure: state.structure
+
   }
 }
+
+// let currentEl = null
 
 class MenuInfinity extends React.Component{
 
@@ -91,10 +96,99 @@ class MenuInfinity extends React.Component{
     </MenuInfinityList>
   }
 
+  _currentEl=null
+
+  _mouseOver=(e)=>{
+    if(this._currentEl) return
+
+    const {relationItemList, updateStructure}=this.props
+
+    let target=e.target
+
+    while(target!==this.menuEl){
+      if(target.tagName==='LI') break
+      target=target.parentNode
+    }
+    if (target === this.menuEl)return
+
+    this._currentEl = target
+
+    const itemId = this._currentEl.dataset.itemId
+    if (itemId && relationItemList[itemId]) {
+     updateStructure(itemId)
+    }
+  }
+
+  _mouseOut=(e)=>{
+    if(!this._currentEl) return
+    let relatedTarget=e.relatedTarget
+    if(relatedTarget){
+      while (relatedTarget){
+        if(relatedTarget === this._currentEl) return
+        if(relatedTarget.tagName === 'UL') break
+
+        relatedTarget = relatedTarget.parentNode
+      }
+    }
+
+    this._currentEl=null
+  }
+
+
+  componentDidMount(){
+    this.menuEl.addEventListener('mouseover',this._mouseOver)
+    this.menuEl.addEventListener('mouseout',this._mouseOut)
+
+    /*let currentEl = null
+    const {relationItemList, updateStructure}=this.props
+    this.menuEl.addEventListener('mouseover',function(e){
+      if(currentEl) return
+
+      let target=e.target
+
+      while(target!==this){
+        if(target.tagName==='LI') break
+        target=target.parentNode
+      }
+      if (target === this)return
+
+      currentEl = target
+
+
+
+      const itemId = currentEl.dataset.itemId
+
+      console.log(itemId)
+      if (itemId && relationItemList[itemId]) {
+        console.log(itemId)
+        updateStructure(itemId)
+      }
+    })
+
+    this.menuEl.addEventListener('mouseout',function(e){
+      if(!currentEl) return
+
+      let relatedTarget=e.relatedTarget
+
+      if(relatedTarget){
+        while (relatedTarget){
+          if(relatedTarget === currentEl) return
+          relatedTarget = relatedTarget.parentNode
+        }
+      }
+
+      currentEl=null
+    })
+*/
+
+  }
+
   render(){
     const {structure}=this.props
 
-    return this._getList(structure,true)
+    return <div ref={ comp => { this.menuEl = comp }} >
+      {this._getList(structure,true)}
+    </div>
   }
 }
 
