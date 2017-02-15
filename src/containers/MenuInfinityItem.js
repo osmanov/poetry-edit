@@ -13,7 +13,7 @@ class MenuItem extends React.Component {
     const { item, className} = this.props
 
     return (
-      <Wrapper data-item-id={item.id} className={className}>
+      <Wrapper data-item-id={item.id} data-list-id={item.listId} className={className}>
         <div>
           {item.label}
         </div>

@@ -57,7 +57,7 @@ export const items={
 
 
 const list ={
-  id:0,
+  id:'L0',
   className:'menuContainer',
   volume:'up',
   axis:'x',
@@ -71,7 +71,7 @@ const list ={
     {
       id: 2,
       list: {
-        id:1,
+        id:'L1',
         className:'menuContainer2',
         volume:'down',
         axis:'y',
@@ -82,7 +82,7 @@ const list ={
           {
             id: 4,
             list: {
-              id:2,
+              id:'L2',
               className:'menuContainer2',
               volume:'up',
               axis:'x',
@@ -90,7 +90,7 @@ const list ={
                 {
                   id: 5,
                   list: {
-                    id:3,
+                    id:'L3',
                     className:'menuContainer2',
                     volume:'down',
                     axis:'y',
@@ -136,9 +136,16 @@ export default class MenuInfinityContainer extends React.Component {
     let listListRelation={}
     listListRelation[list.id]=[]
 
+    const lists={} //todo move to utils
+    Object.keys(listsMount.lists).forEach(index=>{
+      const list = listsMount.lists[index]
+      lists[list.id]=Object.assign({},list)
+    })
+
+    
     const initialState = {
       items, // const
-      lists: listsMount.lists, // const
+      lists, // const
       relations: {
         itemList: listsMount.itemListRelation, //const
         listLists: listListRelation // dynamic
