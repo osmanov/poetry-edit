@@ -101,7 +101,7 @@ class MenuInfinity extends React.Component{
   _mouseOver=(e)=>{
     if(this._currentEl) return
 
-    const {relationItemList, updateStructure}=this.props
+    const {relationItemList, updateStructure, addListListsRelation}=this.props
 
     let target=e.target
 
@@ -114,8 +114,10 @@ class MenuInfinity extends React.Component{
     this._currentEl = target
 
     const itemId = this._currentEl.dataset.itemId
+    console.log(itemId)
     if (itemId && relationItemList[itemId]) {
-     updateStructure(itemId)
+      updateStructure(itemId)
+      addListListsRelation(relationItemList[itemId])
     }
   }
 

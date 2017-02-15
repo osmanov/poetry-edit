@@ -34,24 +34,27 @@ export const actionCreators = {
 const reducer = (state, action) => {
   switch (action.type) {
     case UPDATE_STRUCTURE:
+      if(action.exciterItemId==4){
+      //  debugger
+      }
       const listId = state.relations.itemList[action.exciterItemId]
-      const result={
+      const result={ //todo rename exciterItem
         ...state.items[action.exciterItemId],
         list:{
           ...state.lists[listId],
           exciterItem:null
         }
       }
-debugger
+ // debugger
       const map = fromJS({
         list:Object.assign({}, state.structure)
       })
 
       const keyPath = Object.keys(state.relations.listLists).reduce(res => {
-        return res+'list exciterItem'
+        return res+'list exciterItem '
       },'')
 
-      const newMap = map.setIn(keyPath.split(' '), result)
+      const newMap = map.setIn(keyPath.trim().split(' '), result)
 
 
       return {
@@ -60,6 +63,8 @@ debugger
       }
 
     case ADD_LIST_LISTS_RELATION:
+     // debugger
+
       let listLists={}
       Object.keys(state.relations.listLists).forEach(parentListId=>{
         listLists[parentListId]=state.relations.listLists[parentListId].slice()

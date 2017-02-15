@@ -149,7 +149,6 @@ export default class MenuInfinityContainer extends React.Component {
       } // dynamic
     }
 
-
     const middleware = [thunk]
 
     //if (__DEV__) {
