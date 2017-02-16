@@ -142,15 +142,17 @@ class MenuInfinity extends React.Component{
       const hasItemChildList=relationItemList[itemId]
       if(hasItemChildList !== undefined){
         const isChildListInStructure=~relationListLists[structure.id].indexOf(relationItemList[itemId])
-        if (!isChildListInStructure) {
+        if (isChildListInStructure) {//if child list in structure -remove all sublists
+          const nextListListsId=relationListLists[structure.id][relationListLists[structure.id].indexOf(listId)+1]
+          removeListListsRelation(nextListListsId)
+          updateStructure(itemId)
+        }else{//add child list to structure
           updateStructure(itemId)
           addListListsRelation(relationItemList[itemId])
         }
-      }else{
-        console.log('NO LIST')
-
+      }else{// it's not exciterItem(it means this item doesn't have a child list)
         const hasListSubLists=(relationListLists[structure.id][relationListLists[structure.id].length-1]!==listId) //current listId's index  is last in relationListLists[structure.id]?
-        if(hasListSubLists){
+        if(hasListSubLists){// this item has nephews lists,and current structure has those nephews
           removeListListsRelation(listId)
           for(let itemId in relationItemList){
             if(relationItemList[itemId]===listId){
