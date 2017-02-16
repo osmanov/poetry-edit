@@ -112,7 +112,7 @@ class MenuInfinity extends React.Component{
 
     if(this._currentEl) return
 
-    const {relationItemList, relationListLists, removeListListsRelation, updateStructure, addListListsRelation,structure}=this.props
+    const {relationItemList, relationListLists,clearStructure, removeListListsRelation, updateStructure, addListListsRelation,structure}=this.props
 
     let target=e.target
 
@@ -151,14 +151,15 @@ class MenuInfinity extends React.Component{
 
         const hasListSubLists=(relationListLists[structure.id][relationListLists[structure.id].length-1]!==listId) //current listId's index  is last in relationListLists[structure.id]?
         if(hasListSubLists){
-          debugger
           removeListListsRelation(listId)
+          for(let itemId in relationItemList){
+            if(relationItemList[itemId]===listId){
+              updateStructure(itemId)
+              return
+            }
+          }
+          clearStructure()
         }
-
-
-
-
-        debugger
       }
     }
   }

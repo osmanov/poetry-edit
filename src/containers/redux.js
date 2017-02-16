@@ -4,6 +4,7 @@ const ADD_LIST = 'ADD_LIST'
 const UPDATE_STRUCTURE = 'UPDATE_STRUCTURE'
 const ADD_LIST_LISTS_RELATION = 'ADD_LIST_LISTS_RELATION'
 const REMOVE_LIST_LISTS_RELATION = 'REMOVE_LIST_LISTS_RELATION'
+const CLEAR_STRUCTURE = 'CLEAR_STRUCTURE'
 
 import {fromJS} from 'immutable'
 
@@ -22,6 +23,10 @@ const updateStructure = exciterItemId => ({
   exciterItemId
 })
 
+const clearStructure = () => ({
+  type: CLEAR_STRUCTURE
+})
+
 const addListListsRelation = listId => ({
   type: ADD_LIST_LISTS_RELATION,
   listId
@@ -37,7 +42,8 @@ const removeListListsRelation = listId => ({
 export const actionCreators = {
   updateStructure,
   addListListsRelation,
-  removeListListsRelation
+  removeListListsRelation,
+  clearStructure
 }
 
 
@@ -55,19 +61,23 @@ const reducer = (state, action) => {
       rootRelationResult.forEach((listId,index)=>{
         listsListRelation[listId]=rootRelationResult.slice(index+1)
       })
-debugger
-      /*let result={}
-      state.relations.listLists[action.]
-      Object.keys(state.relations.listLists).forEach(listId=>{
 
-      })*/
-return state
+      return {
+        ...state,
+        relations:Object.assign({},state.relations,{listLists:listsListRelation})
+      }
+
+    case CLEAR_STRUCTURE:
+      return {
+        ...state,
+        structure:{...state.structure, exciterItem:null}
+      }
 
     case UPDATE_STRUCTURE:
-      if(action.exciterItemId==4){
-      //  debugger
-      }
-      debugger
+      // if(action.exciterItemId==4){
+      // //  debugger
+      // }
+      // debugger
       const listId = state.relations.itemList[action.exciterItemId]
       const result={ //todo rename exciterItem
         ...state.items[action.exciterItemId],
