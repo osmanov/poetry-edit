@@ -63,13 +63,23 @@ const list ={
   axis:'x',
   items: [
     {
-      id: 0
+      id: 0,
+      onClick:(e)=>{
+        console.log(e)
+        console.log(item)
+        debugger
+
+      }
     },
     {
       id: 1
     },
     {
       id: 2,
+      onClick:(e,item)=>{
+debugger
+        console.log(e.target)
+      },
       list: {
         id:'L1',
         className:'menuContainer2',
@@ -96,7 +106,17 @@ const list ={
                     axis:'y',
                     items:[
                       {
-                        id: 6
+                        id: 6,
+                        onClick:(e,item)=>{
+                          console.log(e)
+                          console.log(item)
+                          console.log(e.target)
+                          debugger
+                        },
+                        onSubmit:(e,item)=>{
+                          console.log(e)
+                          console.log(item)
+                        }
                       }
                     ]
                   }
@@ -115,13 +135,26 @@ const list ={
 const logger = createLogger()
 
 
+
 const initStructure = {
   id: list.id,
   className: list.className,
   volume: list.volume,
   axis: list.axis,
   itemIdsOrder: list.items.map(item=>item.id),
-  items: list.items.map(item=>items[item.id])
+  items: list.items.map(item=>{
+    let result={...items[item.id],events:null,eventSponsor:false}
+    Object.keys(item).forEach(key=>{
+      if(typeof item[key] === "function"){
+        if(result.events===null){
+          result.events={e:null}
+        }
+        result.events[key]=item[key]
+      }
+    })
+
+    return result
+  })
 }
 
 const listsMount = spreadLists(list.items, {
@@ -142,7 +175,6 @@ export default class MenuInfinityContainer extends React.Component {
       lists[list.id]=Object.assign({},list)
     })
 
-    
     const initialState = {
       items, // const
       lists, // const

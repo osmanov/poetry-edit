@@ -108,7 +108,7 @@ class MenuInfinity extends React.Component{
     console.log('target-->')
     console.log(e.target)
     console.log('this._currentEl BEFORE-->')
-    console.log(this._currentEl)
+    //console.log(this._currentEl)
 
     if(this._currentEl) return
 
@@ -134,6 +134,7 @@ class MenuInfinity extends React.Component{
     console.log(this._currentEl)
 
 
+    //TODO move to utils
     const itemId = isNaN(+this._currentEl.dataset.itemId)?this._currentEl.dataset.itemId:+this._currentEl.dataset.itemId
     const listId = isNaN(+this._currentEl.dataset.listId)?this._currentEl.dataset.listId:+this._currentEl.dataset.listId
 
@@ -200,10 +201,26 @@ class MenuInfinity extends React.Component{
     console.log('this._currentEl === null')
   }
 
+  _parseDataset(el){
+    const itemId = isNaN(+el.dataset.itemId)?el.dataset.itemId:+el.dataset.itemId
+    const listId = isNaN(+el.dataset.listId)?el.dataset.listId:+el.dataset.listId
+    return {itemId,listId}
+  }
+  
+  _click(e){
+    const {itemClick}=this.props
+    let target=e.target
+    while(target!==this.menuEl){
+      if(target.tagName==='LI') break
+      target=target.parentNode
+    }
+    itemClick(e,...this._parseDataset(target))
+  }
 
   componentDidMount(){
     this.menuEl.addEventListener('mouseover',this._mouseOver)
     this.menuEl.addEventListener('mouseout',this._mouseOut)
+    this.menuEl.addEventListener('click',this._click)
 
     /*let currentEl = null
     const {relationItemList, updateStructure}=this.props

@@ -5,6 +5,7 @@ const UPDATE_STRUCTURE = 'UPDATE_STRUCTURE'
 const ADD_LIST_LISTS_RELATION = 'ADD_LIST_LISTS_RELATION'
 const REMOVE_LIST_LISTS_RELATION = 'REMOVE_LIST_LISTS_RELATION'
 const CLEAR_STRUCTURE = 'CLEAR_STRUCTURE'
+const ITEM_CLICK = 'ITEM_CLICK'
 
 import {fromJS} from 'immutable'
 
@@ -37,18 +38,31 @@ const removeListListsRelation = listId => ({
   listId
 })
 
+const itemClick = (event,itemId,listId) => ({
+  type: ITEM_CLICK,
+  itemId,
+  listId,
+  event
+})
+
 
 
 export const actionCreators = {
   updateStructure,
   addListListsRelation,
   removeListListsRelation,
-  clearStructure
+  clearStructure,
+  itemClick
 }
 
 
 const reducer = (state, action) => {
   switch (action.type) {
+    case ITEM_CLICK:
+    //TODO from here  
+    // const itemIndex=state.lists[action.listId].itemIdsOrder.indexOf(action.itemId)
+      // const clickedItem=state.lists[action.listId].items[itemIndex]
+
     case REMOVE_LIST_LISTS_RELATION:
       const rootListId=state.structure.id
       let rootRelation=state.relations.listLists[rootListId]
