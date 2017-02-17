@@ -72,7 +72,9 @@ const mapStateToProps = state => {
     // relationItemList:relationItemListSelector(state)
     relationItemList:state.relations.itemList,
     relationListLists:state.relations.listLists,
-    structure: state.structure
+    structure: state.structure,
+    lists: state.lists,
+    currentEvent: state.currentEvent
 
   }
 }
@@ -206,15 +208,25 @@ class MenuInfinity extends React.Component{
     const listId = isNaN(+el.dataset.listId)?el.dataset.listId:+el.dataset.listId
     return {itemId,listId}
   }
-  
-  _click(e){
-    const {itemClick}=this.props
+
+  _click=(e)=>{
+    const {lists}=this.props
     let target=e.target
     while(target!==this.menuEl){
       if(target.tagName==='LI') break
       target=target.parentNode
     }
-    itemClick(e,...this._parseDataset(target))
+
+    const dataSet = this._parseDataset(target)
+    const itemIndexOrder=lists[dataSet.listId].itemIdsOrder.indexOf(dataSet.itemId)
+    const item = lists[dataSet.listId].items[itemIndexOrder]
+    if(item.events && item.events.onClick){
+      if(typeof item.events.onClick === 'function'){
+        item.events.onClick(e,item,lists[dataSet.listId])
+        //TODO add onClick from container props add items and stuff
+      }
+    }
+
   }
 
   componentDidMount(){

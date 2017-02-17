@@ -2,8 +2,12 @@ import React from 'react'
 import { createStore, applyMiddleware } from 'redux'
 import reducer from './redux'
 
+import rootSaga from './sagas'
+
 import createLogger from 'redux-logger'
-import thunk from 'redux-thunk'
+import createSagaMiddleware from 'redux-saga'
+
+const sagaMiddleware = createSagaMiddleware()
 
 import MenuInfinity from './MenuInfinity'
 import {spreadLists} from './utils'
@@ -64,11 +68,10 @@ const list ={
   items: [
     {
       id: 0,
-      onClick:(e)=>{
+      onClick:(e,item)=>{
         console.log(e)
         console.log(item)
         debugger
-
       }
     },
     {
@@ -77,8 +80,8 @@ const list ={
     {
       id: 2,
       onClick:(e,item)=>{
-debugger
-        console.log(e.target)
+        console.log(item)
+        debugger
       },
       list: {
         id:'L1',
@@ -107,10 +110,9 @@ debugger
                     items:[
                       {
                         id: 6,
-                        onClick:(e,item)=>{
-                          console.log(e)
+                        onClick:(e,item,list)=>{
                           console.log(item)
-                          console.log(e.target)
+                          console.log(list)
                           debugger
                         },
                         onSubmit:(e,item)=>{
@@ -143,11 +145,11 @@ const initStructure = {
   axis: list.axis,
   itemIdsOrder: list.items.map(item=>item.id),
   items: list.items.map(item=>{
-    let result={...items[item.id],events:null,eventSponsor:false}
+    let result={...items[item.id],events:null}
     Object.keys(item).forEach(key=>{
       if(typeof item[key] === "function"){
         if(result.events===null){
-          result.events={e:null}
+          result.events={}
         }
         result.events[key]=item[key]
       }
@@ -188,7 +190,7 @@ export default class MenuInfinityContainer extends React.Component {
       } // dynamic
     }
 
-    const middleware = [thunk]
+    const middleware = [sagaMiddleware]
 
     //if (__DEV__) {
       middleware.push(logger)
@@ -200,6 +202,9 @@ export default class MenuInfinityContainer extends React.Component {
       applyMiddleware(...middleware)
     )
 
+    sagaMiddleware.run(rootSaga)
+
+    //const action = type =>  this.store.dispatch({type})
     //this.store = createStore(reducer, initialState)
   }
 

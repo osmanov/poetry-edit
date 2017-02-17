@@ -19,12 +19,13 @@ export function spreadLists(nephews, result) {
         if (key === 'items') {
           list.itemIdsOrder = item.list[key].map(item=>item.id)
           list.items = item.list[key].map(item=>{
-            let result={...itemCollection[item.id],events:null,eventSponsor:false}
+            let result={...itemCollection[item.id],events:null}
+
 
             Object.keys(item).forEach(key=>{
               if(typeof item[key] === "function"){
                 if(result.events===null){
-                  result.events={e:null}
+                  result.events={}
                 }
                 result.events[key]=item[key]
               }

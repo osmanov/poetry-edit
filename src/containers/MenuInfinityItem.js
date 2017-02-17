@@ -9,11 +9,14 @@ const Wrapper = styled.li`
 
 class MenuItem extends React.Component {
 
-  componentWillUpdate(){
-    const {item:{eventSponsor,events}}=this.props
-    if(eventSponsor && events && events.onClick){
-      events.onClick.apply(this.props.item,events.e)
-    }
+  componentWillReceiveProps(nextProps){
+    // const {item:{events}}=nextProps
+    // console.log('RENATTTTTTTTTT')
+    //
+    // if(events && events.e && events.onClick){
+    //   debugger
+    //   events.onClick.apply(this.props.item,events.e)
+    // }
   }
 
   render() {
