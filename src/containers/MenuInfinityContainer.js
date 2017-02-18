@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { PropTypes } from 'react'
 import { createStore, applyMiddleware } from 'redux'
 import reducer from './redux'
 
@@ -67,22 +67,13 @@ const list ={
   axis:'x',
   items: [
     {
-      id: 0,
-      onClick:(e,item)=>{
-        console.log(e)
-        console.log(item)
-        debugger
-      }
+      id: 0
     },
     {
       id: 1
     },
     {
       id: 2,
-      onClick:(e,item)=>{
-        console.log(item)
-        debugger
-      },
       list: {
         id:'L1',
         className:'menuContainer2',
@@ -109,16 +100,7 @@ const list ={
                     axis:'y',
                     items:[
                       {
-                        id: 6,
-                        onClick:(e,item,list)=>{
-                          console.log(item)
-                          console.log(list)
-                          debugger
-                        },
-                        onSubmit:(e,item)=>{
-                          console.log(e)
-                          console.log(item)
-                        }
+                        id: 6
                       }
                     ]
                   }
@@ -144,19 +126,7 @@ const initStructure = {
   volume: list.volume,
   axis: list.axis,
   itemIdsOrder: list.items.map(item=>item.id),
-  items: list.items.map(item=>{
-    let result={...items[item.id],events:null}
-    Object.keys(item).forEach(key=>{
-      if(typeof item[key] === "function"){
-        if(result.events===null){
-          result.events={}
-        }
-        result.events[key]=item[key]
-      }
-    })
-
-    return result
-  })
+  items: list.items.map(item=>items[item.id])
 }
 
 const listsMount = spreadLists(list.items, {
@@ -165,6 +135,10 @@ const listsMount = spreadLists(list.items, {
 })
 
 export default class MenuInfinityContainer extends React.Component {
+  static propTypes = {
+    itemOnClick:PropTypes.func
+  }
+
   constructor(props) {
     super(props)
 
@@ -209,6 +183,7 @@ export default class MenuInfinityContainer extends React.Component {
   }
 
   render(){
-    return <MenuInfinity store={this.store}/>
+    const {itemOnClick} = this.props
+    return <MenuInfinity itemOnClick={itemOnClick} store={this.store}/>
   }
 }

@@ -18,21 +18,7 @@ export function spreadLists(nephews, result) {
         const key = keys[i]
         if (key === 'items') {
           list.itemIdsOrder = item.list[key].map(item=>item.id)
-          list.items = item.list[key].map(item=>{
-            let result={...itemCollection[item.id],events:null}
-
-
-            Object.keys(item).forEach(key=>{
-              if(typeof item[key] === "function"){
-                if(result.events===null){
-                  result.events={}
-                }
-                result.events[key]=item[key]
-              }
-            })
-
-            return result
-          })
+          list.items = item.list[key].map(item=>itemCollection[item.id])
 
           const cloneRelation = Object.assign({}, clone.itemListRelation)
           cloneRelation[item.id] = item.list.id

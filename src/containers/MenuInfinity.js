@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { actionCreators } from './redux'
 import { createSelector } from 'reselect'
@@ -82,6 +82,9 @@ const mapStateToProps = state => {
 // let currentEl = null
 
 class MenuInfinity extends React.Component{
+  static propTypes = {
+    itemOnClick:PropTypes.func
+  }
 
   _getItems = list => {
     const {addListListsRelation,updateStructure, relationItemList}=this.props
@@ -210,7 +213,7 @@ class MenuInfinity extends React.Component{
   }
 
   _click=(e)=>{
-    const {lists}=this.props
+    const {lists,itemOnClick}=this.props
     let target=e.target
     while(target!==this.menuEl){
       if(target.tagName==='LI') break
@@ -220,19 +223,17 @@ class MenuInfinity extends React.Component{
     const dataSet = this._parseDataset(target)
     const itemIndexOrder=lists[dataSet.listId].itemIdsOrder.indexOf(dataSet.itemId)
     const item = lists[dataSet.listId].items[itemIndexOrder]
-    if(item.events && item.events.onClick){
-      if(typeof item.events.onClick === 'function'){
-        item.events.onClick(e,item,lists[dataSet.listId])
-        //TODO add onClick from container props add items and stuff
-      }
-    }
 
+    if(itemOnClick){
+      itemOnClick(e,item,lists[dataSet.listId])
+    }
   }
 
   componentDidMount(){
     this.menuEl.addEventListener('mouseover',this._mouseOver)
     this.menuEl.addEventListener('mouseout',this._mouseOut)
-    this.menuEl.addEventListener('click',this._click)
+    this.menuEl.addEventListener('mousedown',this._click)
+
 
     /*let currentEl = null
     const {relationItemList, updateStructure}=this.props
