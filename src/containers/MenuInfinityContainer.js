@@ -56,6 +56,11 @@ export const items={
     label:<i className="fa fa-align-left" aria-hidden="true"></i>,
     className:'item',
     mark:'alignLeft'
+  },
+  8:{
+    id:8,
+    label: <span>RENAT</span>,
+    className:'item',
   }
 }
 
@@ -70,7 +75,7 @@ const list ={
       id: 0
     },
     {
-      id: 1
+      id: 8
     },
     {
       id: 2,
@@ -126,7 +131,7 @@ const initStructure = {
   volume: list.volume,
   axis: list.axis,
   itemIdsOrder: list.items.map(item=>item.id),
-  items: list.items.map(item=>items[item.id])
+  items: list.items.map(item=>({...item,...items[item.id]}))
 }
 
 const listsMount = spreadLists(list.items, {
@@ -136,7 +141,10 @@ const listsMount = spreadLists(list.items, {
 
 export default class MenuInfinityContainer extends React.Component {
   static propTypes = {
-    itemOnClick:PropTypes.func
+    itemOnClick: PropTypes.func,
+    structure: PropTypes.object,
+    list: PropTypes.object.isRequired,
+    items: PropTypes.object.isRequired
   }
 
   constructor(props) {
