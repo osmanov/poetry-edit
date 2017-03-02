@@ -1,14 +1,30 @@
 let items=null
 import {fromJS} from 'immutable'
 
+
+function floatUntilRootList(list,res){
+  let clone=[...res]
+  if(list.parentListId!==null){
+    clone=floatUntilRootList(floatUntilRootList.lists[list.parentListId],[list.parentListId,...res])
+  }else{
+    let result = {[list.id]: clone}
+    clone.forEach((listId, index)=> {
+      result[listId] = clone.slice(index + 1)
+    })
+   return {listList:result,orderLists:[...clone]}
+  }
+  return clone
+}
+
 export function inity(currentListSection, result = null){
   const blankList = itemsListMixin(currentListSection, inity.items)
 
   if (result === null) {
     result = {
-      lists: {[blankList.id]: {...blankList}},
+      lists: {[blankList.id]: {...blankList, parentListId: null}},
       relations: {
         itemList: {},
+        listItem: {},
         listLists: {[blankList.id]:[]}
       },
       structure: {
@@ -21,17 +37,16 @@ export function inity(currentListSection, result = null){
   for (let j = 0; j < currentListSection.items.length; j++) { //items
     const item = currentListSection.items[j]
     if (item.list) {
-      console.log(Object.keys(result.lists).length)
       const keys = Object.keys(item.list)
       for (let i = 0; i < keys.length; i++) { //list stuff
         const key = keys[i]
         if (key === 'items') {
 
-          const lists = {lists: {[item.list.id]: itemsListMixin(item.list, inity.items), ...result.lists}}
-          const relationsItemList={itemList: {[item.id]: item.list.id, ...result.relations.itemList}}
-          let relationsListLists={listLists:{...result.relations.listLists}}
+          const lists = {lists: {[item.list.id]: {...itemsListMixin(item.list, inity.items),parentListId:blankList.id}, ...result.lists}}
 
-          //const relations = {relations: Object.assign({},result.relations,{itemList: {[item.id]: item.list.id, ...result.relations.itemList}})}
+          const relationsItemList={itemList: {[item.id]: item.list.id, ...result.relations.itemList}}
+          const relationsListItem={listItem: {[item.list.id]: item.id, ...result.relations.listItem}}
+          let relationsListLists={listLists:{...result.relations.listLists}}
 
           let structure = {structure: Object.assign({}, result.structure)}
 
@@ -39,52 +54,50 @@ export function inity(currentListSection, result = null){
             for (let k = 0,listsItems=lists.lists[item.list.id].items; k < listsItems.length; k++) {
               if (inity.ruleStructure({...listsItems[k],...inity.items[listsItems[k].id]})) {// TODO if key `list` exists  remove it from argument
 
-                const exciter={
-                  ...inity.items[item.id],
-                  list:{
-                    ...lists.lists[item.list.id],
-                    exciterItem:null
+                floatUntilRootList.lists = {...lists.lists}
+                const {listList,orderLists}=floatUntilRootList(lists.lists[item.list.id], [item.list.id])
+
+                relationsListLists.listLists = listList
+
+
+                const itList=orderLists.slice(1)
+
+                let keyPath='list exciterItem '
+
+                for(let it=0;it<itList.length;it++){
+                  const listId=itList[it]
+                  const itemIdByListId = relationsListItem.listItem[listId]
+
+
+                  //todo if(!inity.items[itemIdByListId]) exception
+
+                  const exciter={
+                    ...inity.items[itemIdByListId],
+                    list:{
+                      ...lists.lists[listId],
+                      exciterItem:null
+                    }
                   }
+
+
+                  const newMap=fromJS({
+                    list:structure.structure
+                  }).setIn(keyPath.trim().split(' '), exciter)
+                  keyPath+='list exciterItem '
+                  structure.structure=newMap.toJS().list
                 }
 
-                const map = fromJS({
-                  list:structure
-                })
-                console.log('--->'+Object.keys(lists.lists).length)
-                const keyPath = Object.keys(result.relations.listLists).reduce(res => {
-                  return res+'list exciterItem '
-                },'')
+// console.log(structure.structure)
+// console.log(structure.structure)
+               // console.log(structure.structure.exciterItem.list.exciterItem.list.exciterItem)
 
-                const newMap = map.setIn(keyPath.trim().split(' '), exciter)
-                structure=newMap.toJS().list
-
-                /*****************/
-                let listLists={}
-                for (let z = 0; z < Object.keys(lists.lists).length; z++) {//todo object.keys length
-//TODo define all prev lists for listLists
-                }
-                Object.keys(relationsListLists.listLists).forEach(parentListId=>{
-                  listLists[parentListId]=relationsListLists.listLists[parentListId].slice()
-                  listLists[parentListId].push(item.list.id)
-                })
-                /***************/
-
-                /*let listLists={}
-                Object.keys(relationsListLists.listLists).forEach(parentListId=>{
-                  listLists[parentListId]=relationsListLists.listLists[parentListId].slice()
-                  listLists[parentListId].push(item.list.id)
-                })
-                listLists[item.list.id]=[]
-                relationsListLists.listLists=listLists*/
-
-               // relations={...relations.relations}
-
+                //console.log(map.toJS().list)
                 break
               }
             }
 
           }
-          const relations = {relations: {...relationsItemList,...relationsListLists}}
+          const relations = {relations: {...relationsItemList,...relationsListLists,...relationsListItem}}
 
 
 
@@ -189,7 +202,7 @@ export function initializeState(currentListSection, result = null) {
       for (let i = 0; i < keys.length; i++) {
         const key = keys[i]
         if (key === 'items') {
-          console.log()
+
           list.itemIdsOrder = item.list.items.map(item=>item.id)
           list.items = item.list.items.map(item=>({...item,...initializeState.items[item.id]}))
           clone.relations.itemList[item.id] = item.list.id

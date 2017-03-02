@@ -1,5 +1,5 @@
 import test from 'ava'
-import {spreadLists,inity} from './utils'
+import {inity} from './utils'
 import React from 'react'
 const items={
   0:{
@@ -50,6 +50,36 @@ const items={
   8:{
     id:8,
     label: <span>RENAT</span>,
+    className:'item',
+  },
+  146:{
+    id:146,
+    label: <span>OSMANOV</span>,
+    className:'item',
+  },
+  16:{
+    id:16,
+    label: <span>CHINO</span>,
+    className:'item',
+  },
+  36:{
+    id:36,
+    label: <span>MORENO</span>,
+    className:'item',
+  },
+  46:{
+    id:46,
+    label: <span>ABE</span>,
+    className:'item',
+  },
+  62:{
+    id:62,
+    label: <span>STEFAN</span>,
+    className:'item',
+  },
+  162:{
+    id:162,
+    label: <span>DAN</span>,
     className:'item',
   }
 }
@@ -146,67 +176,11 @@ const inputData={
   ]
 }
 
-const result=spreadLists(inputData.items,{
-  lists:[{
-    id:inputData.id
-  }],
-  itemListRelation:{}
-},items)
-
-test('spreadLists result is consisted from two properties', t => {
-  t.is(Object.keys(result).length,2)
-})
-
-test('spreadLists returns lists property with right length', t => {
-  t.is(result.lists.length,7)
-})
-
-test('spreadLists returns itemListRelation property with right value', t => {
-  t.deepEqual(result.itemListRelation,{
-    7:2,
-    6:125,
-    16:225,
-    8:25,
-    46:215,
-    146:1215
-  })
-})
-
-inity.items=items
-inity.ruleStructure = item => item.id == 36
-
-const resultInity=inity(inputData)
-
-test('inity result relation.itemList', t => {
-  t.deepEqual(resultInity.relations.itemList,{
-    7:2,
-    6:125,
-    16:225,
-    8:25,
-    46:215,
-    146:1215
-  })
-})
-
-test('inity result relation.listLists with initStructureByRule', t => {
-  t.deepEqual(resultInity.relations.listLists,{
-    0:[2,125,225],
-    2:[125,225],
-    125:[225],
-    225:[]
-  })
-})
-
-/*
-test('inity result relation.listLists', t => {
-  t.deepEqual(resultInity.relations.listLists,{
-    0:[]
-  })
-})*/
-
-test('inity result items', t => {
-  t.deepEqual(resultInity.items,items)
-})
+function macro(ruleStructure){
+  inity.items=items
+  inity.ruleStructure = ruleStructure
+  return inity(inputData)
+}
 
 function helper(sliceItems){
   return sliceItems.map(item=>{
@@ -214,75 +188,145 @@ function helper(sliceItems){
   })
 }
 
-test('inity result lists', t => {
-  t.is(Object.keys(resultInity.lists).length,7)
 
-  t.deepEqual(resultInity.lists[0],{
+test('inity result relation.itemList', t => {
+  const {relations:{itemList}}=macro()
+  t.deepEqual(itemList,{
+    7:2,
+    6:125,
+    16:225,
+    8:25,
+    46:215,
+    146:1215
+  })
+})
+
+test('inity result relation.listItem', t => {
+  const {relations:{listItem}}=macro()
+  t.deepEqual(listItem,{
+    2:7,
+    125:6,
+    225:16,
+    25:8,
+    215:46,
+    1215:146
+  })
+})
+
+test('inity result relation.listLists with initStructureByRule', t => {
+  const {relations:{listLists}}=macro(item => item.id == 162)
+  t.deepEqual(listLists,{
+    0:[2,25,1215],
+    2:[25,1215],
+    25:[1215],
+    1215:[]
+  })
+})
+
+
+test('inity result relation.listLists', t => {
+  const {relations:{listLists}}=macro()
+  t.deepEqual(listLists,{
+    0:[]
+  })
+})
+
+test('inity result items', t => {
+  t.deepEqual(macro().items,items)
+})
+
+
+
+test('inity result lists', t => {
+  const {lists}=macro()
+  t.is(Object.keys(lists).length,7)
+
+  t.deepEqual(lists[0],{
     className:'menuContainer',
     volume:'up',
     axis:'x',
     id:0,
     itemIdsOrder:[0,1,7],
-    items:helper(inputData.items)
+    items:helper(inputData.items),
+    parentListId:null
   })
 
-  t.deepEqual(resultInity.lists[2],{
+  t.deepEqual(lists[2],{
     id:2,
     className:'menuContainer2',
     volume:'up',
     axis:'x',
     itemIdsOrder:[6,8],
-    items:helper(inputData.items[2].list.items)
+    items:helper(inputData.items[2].list.items),
+    parentListId:0
   })
 
-  t.deepEqual(resultInity.lists[125],{
+  t.deepEqual(lists[125],{
     id:125,
     className:'menuContainer2',
     volume:'up',
     axis:'y',
     itemIdsOrder:[16],
-    items:helper(inputData.items[2].list.items[0].list.items)
+    items:helper(inputData.items[2].list.items[0].list.items),
+    parentListId:2
   })
 
-  t.deepEqual(resultInity.lists[225],{
+  t.deepEqual(lists[225],{
     id:225,
     className:'menuContainer2',
     volume:'up',
     axis:'y',
     itemIdsOrder:[36],
-    items:helper(inputData.items[2].list.items[0].list.items[0].list.items)
+    items:helper(inputData.items[2].list.items[0].list.items[0].list.items),
+    parentListId:125
   })
 
-  t.deepEqual(resultInity.lists[25],{
+  t.deepEqual(lists[25],{
     id:25,
     className:'menuContainer2',
     volume:'up',
     axis:'x',
     itemIdsOrder:[46,146],
-    items:helper(inputData.items[2].list.items[1].list.items)
+    items:helper(inputData.items[2].list.items[1].list.items),
+    parentListId:2
   })
 
-  t.deepEqual(resultInity.lists[215],{
+  t.deepEqual(lists[215],{
     id:215,
     className:'menuContainer2',
     volume:'up',
     axis:'x',
     itemIdsOrder:[62],
-    items:helper(inputData.items[2].list.items[1].list.items[0].list.items)
+    items:helper(inputData.items[2].list.items[1].list.items[0].list.items),
+    parentListId:25
   })
 
-  t.deepEqual(resultInity.lists[1215],{
+  t.deepEqual(lists[1215],{
     id:1215,
     className:'menuContainer2',
     volume:'up',
     axis:'y',
     itemIdsOrder:[162],
-    items:helper(inputData.items[2].list.items[1].list.items[1].list.items)
+    items:helper(inputData.items[2].list.items[1].list.items[1].list.items),
+    parentListId:25
   })
 })
 
-test('inity result structure without initStructureByRule', t => {
-  t.deepEqual(resultInity.structure,{
+test('inity result structure with initStructureByRule', t => {
+  const {structure}=macro(item => item.id == 162)
+  t.is(structure.id,inputData.id)
+  t.is(structure.exciterItem.id,inputData.items[2].id)
+  t.is(structure.exciterItem.list.id,inputData.items[2].list.id)
+  t.is(structure.exciterItem.list.exciterItem.id,inputData.items[2].list.items[1].id)
+  t.is(structure.exciterItem.list.exciterItem.list.id,inputData.items[2].list.items[1].list.id)
+  t.is(structure.exciterItem.list.exciterItem.list.exciterItem.id,inputData.items[2].list.items[1].list.items[1].id)
+  t.is(structure.exciterItem.list.exciterItem.list.exciterItem.list.id,inputData.items[2].list.items[1].list.items[1].list.id)
+  t.is(structure.exciterItem.list.exciterItem.list.exciterItem.list.exciterItem,null)
+})
+
+test('inity result structure', t => {
+  const {structure}=macro()
+  t.deepEqual(structure,{
     exciterItem: null,
     id: inputData.id,
     className: inputData.className,
@@ -295,3 +339,24 @@ test('inity result structure without initStructureByRule', t => {
 
 
 
+
+/*
+0:[2]
+2:[125,25]
+125:[225]
+25:[215,1215]
+*/
+
+/*
+ 0:[2,125,225],
+ 2:[125,225],
+ 125:[225],
+ 225:[]
+*/
+
+/*
+ 0:[2,25,1215],
+ 2:[25,1215],
+ 25:[1215],
+ 1215:[]
+*/
