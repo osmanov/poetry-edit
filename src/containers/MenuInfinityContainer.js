@@ -10,7 +10,7 @@ import createSagaMiddleware from 'redux-saga'
 const sagaMiddleware = createSagaMiddleware()
 
 import MenuInfinity from './MenuInfinity'
-import {spreadLists, initializeState} from './utils'
+import {spreadLists, inity} from './utils'
 
 const logger = createLogger()
 
@@ -28,58 +28,14 @@ export default class MenuInfinityContainer extends React.Component {
   constructor(props) {
     super(props)
 
-    const rootList = {
-      id: this.props.list.id,
-      className: this.props.list.className,
-      volume: this.props.list.volume,
-      axis: this.props.list.axis,
-      itemIdsOrder: this.props.list.items.map(item=>item.id),
-      items: this.props.list.items.map(item=>({...item, ...this.props.items[item.id]}))
-    }
 
 
-    initializeState.items = this.props.items
-    initializeState.ruleStructure = this.props.initStructureByRule
-    const init = initializeState(this.props.list)
 
-    const initStructure = {
-      id: this.props.list.id,
-      className: this.props.list.className,
-      volume: this.props.list.volume,
-      axis: this.props.list.axis,
-      itemIdsOrder: this.props.list.items.map(item=>item.id),
-      items: this.props.list.items.map(item=>({...item,...this.props.items[item.id]}))
-    }
+    inity.items = this.props.items
+    inity.ruleStructure = this.props.initStructureByRule
+    const initialState = inity(this.props.list)
 
-    const listsMount = spreadLists(this.props.list.items, {
-      lists: [{...initStructure}],
-      itemListRelation: {}
-    },this.props.items)
-console.log(listsMount)
-    //TODO set if this.props.structure
-    let listListRelation={}
-    listListRelation[this.props.list.id]=[]
 
-    const lists={} //todo move to utils
-    Object.keys(listsMount.lists).forEach(index=>{
-      const list = listsMount.lists[index]
-      lists[list.id]=Object.assign({},list)
-    })
-
-    const structure = this.props.structure || {
-        ...initStructure,
-        exciterItem: null
-      }
-
-    const initialState = {
-      items:this.props.items, // const
-      lists, // const
-      relations: {
-        itemList: listsMount.itemListRelation, //const
-        listLists: listListRelation // dynamic
-      },
-      structure
-    }
 
     console.log(initialState)
 
