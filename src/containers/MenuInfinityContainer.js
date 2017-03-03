@@ -10,13 +10,16 @@ import createSagaMiddleware from 'redux-saga'
 const sagaMiddleware = createSagaMiddleware()
 
 import MenuInfinity from './MenuInfinity'
-import {spreadLists} from './utils'
+import {spreadLists, initializeState} from './utils'
 
 const logger = createLogger()
+
+
 
 export default class MenuInfinityContainer extends React.Component {
   static propTypes = {
     itemOnClick: PropTypes.func,
+    initStructureByRule: PropTypes.func,
     structure: PropTypes.object,
     list: PropTypes.object.isRequired,
     items: PropTypes.object.isRequired
@@ -24,6 +27,20 @@ export default class MenuInfinityContainer extends React.Component {
 
   constructor(props) {
     super(props)
+
+    const rootList = {
+      id: this.props.list.id,
+      className: this.props.list.className,
+      volume: this.props.list.volume,
+      axis: this.props.list.axis,
+      itemIdsOrder: this.props.list.items.map(item=>item.id),
+      items: this.props.list.items.map(item=>({...item, ...this.props.items[item.id]}))
+    }
+
+
+    initializeState.items = this.props.items
+    initializeState.ruleStructure = this.props.initStructureByRule
+    const init = initializeState(this.props.list)
 
     const initStructure = {
       id: this.props.list.id,
@@ -38,7 +55,7 @@ export default class MenuInfinityContainer extends React.Component {
       lists: [{...initStructure}],
       itemListRelation: {}
     },this.props.items)
-
+console.log(listsMount)
     //TODO set if this.props.structure
     let listListRelation={}
     listListRelation[this.props.list.id]=[]
@@ -63,6 +80,9 @@ export default class MenuInfinityContainer extends React.Component {
       },
       structure
     }
+
+    console.log(initialState)
+
 
     const middleware = [sagaMiddleware]
 
