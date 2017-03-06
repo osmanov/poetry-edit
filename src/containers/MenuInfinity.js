@@ -117,7 +117,7 @@ class MenuInfinity extends React.Component{
 
     if(this._currentEl) return
 
-    const {relationItemList, relationListLists,clearStructure, removeListListsRelation, updateStructure, addListListsRelation,structure}=this.props
+    const {relationItemList, relationListLists,clearStructure, removeListListsRelation,lists, updateStructure, addListListsRelation,structure}=this.props
 
     let target=e.target
 
@@ -148,11 +148,17 @@ class MenuInfinity extends React.Component{
       const hasItemChildList=relationItemList[itemId]
       if(hasItemChildList !== undefined){
         const isChildListInStructure=~relationListLists[structure.id].indexOf(relationItemList[itemId])
+        const isParentListIdInStructure=~relationListLists[structure.id].indexOf(lists[relationItemList[itemId]].parentListId)
+        //lists[relationItemList[itemId]].parentListId
+
         if (isChildListInStructure) {//if child list in structure -remove all sublists
           const nextListListsId=relationListLists[structure.id][relationListLists[structure.id].indexOf(listId)+1]
           removeListListsRelation(nextListListsId)
           updateStructure(itemId)
         }else{//add child list to structure
+          if(isParentListIdInStructure && relationListLists[lists[relationItemList[itemId]].parentListId].length){// if current item has opened sibling,close that sibling
+            removeListListsRelation(lists[relationItemList[itemId]].parentListId)
+          }
           updateStructure(itemId)
           addListListsRelation(relationItemList[itemId])
         }
@@ -212,6 +218,7 @@ class MenuInfinity extends React.Component{
     return {itemId,listId}
   }
 
+//TODO dispatch active item
   _click=(e)=>{
     const {lists,itemOnClick}=this.props
     let target=e.target
