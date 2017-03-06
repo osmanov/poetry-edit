@@ -16,6 +16,7 @@ function floatUntilRootList(list,res){
   return clone
 }
 
+
 //TODO RENAME initializeState
 export function inity(currentListSection, result = null){
   const blankList = itemsListMixin(currentListSection, inity.items)
@@ -43,7 +44,7 @@ export function inity(currentListSection, result = null){
         const key = keys[i]
         if (key === 'items') {
 
-          const lists = {lists: {[item.list.id]: {...itemsListMixin(item.list, inity.items),parentListId:blankList.id}, ...result.lists}}
+          let lists = {lists: {[item.list.id]: {...itemsListMixin(item.list, inity.items),parentListId:blankList.id}, ...result.lists}}
 
           const relationsItemList={itemList: {[item.id]: item.list.id, ...result.relations.itemList}}
           const relationsListItem={listItem: {[item.list.id]: item.id, ...result.relations.listItem}}
@@ -52,12 +53,17 @@ export function inity(currentListSection, result = null){
           let structure = {structure: Object.assign({}, result.structure)}
 
           if(typeof inity.ruleStructure === "function"){
-            for (let k = 0,listsItems=lists.lists[item.list.id].items; k < listsItems.length; k++) {
-              if (inity.ruleStructure({...listsItems[k],...inity.items[listsItems[k].id]})) {// TODO if key `list` exists  remove it from argument
+            for (let k = 0,listsItems=[...lists.lists[item.list.id].items]; k < listsItems.length; k++) {
+              if (inity.ruleStructure({...listsItems[k]})) {// TODO if key `list` exists  remove it from argument
+                // lists.lists[item.list.id].items[k]=Object.assign({},lists.lists[item.list.id].items[k],{className:`${lists.lists[item.list.id].items[k].className} item-active`})
 
+               // lists.lists[item.list.id].items[k]=retrieveActiveItem(lists.lists[item.list.id].items[k])
+
+//debugger
                 floatUntilRootList.lists = {...lists.lists}
                 const {listList,orderLists}=floatUntilRootList(lists.lists[item.list.id], [item.list.id])
-
+// debugger
+                console.log(listList)
                 relationsListLists.listLists = listList
 
 
@@ -72,7 +78,7 @@ export function inity(currentListSection, result = null){
 
                   //todo if(!inity.items[itemIdByListId]) exception
 
-                  const exciter={
+                  const exciter={//TODO ?inity.ruleStructure for current item
                     ...inity.items[itemIdByListId],
                     list:{
                       ...lists.lists[listId],
@@ -102,13 +108,29 @@ export function inity(currentListSection, result = null){
   return result
 }
 
+function isItemAcive(item){
+  return (typeof inity.ruleStructure === "function") && inity.ruleStructure({...item})
+}
+
+function retrieveActiveClassNameItem(className){
+ return className ? `${className} ${className}-active` : 'menu-infinity-item-active'
+}
+
+
 function itemsListMixin(list, itemsCollection) {
+  const itemsIteratorResult=list.items.reduce((result,item)=>{
+    result.itemIdsOrder.push(item.id)
+
+    const className = (isItemAcive({...item, ...itemsCollection[item.id]})) ? retrieveActiveClassNameItem(itemsCollection[item.id].className) : itemsCollection[item.id].className
+    result.items.push({...item, ...itemsCollection[item.id],className})
+    return result
+  },{itemIdsOrder:[],items:[]})
+
   return {
     id: list.id,
     className: list.className,
     volume: list.volume,
     axis: list.axis,
-    itemIdsOrder: list.items.map(item=>item.id),
-    items: list.items.map(item=>({...item, ...itemsCollection[item.id]}))
+    ...itemsIteratorResult
   }
 }

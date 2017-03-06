@@ -10,7 +10,7 @@ import createSagaMiddleware from 'redux-saga'
 const sagaMiddleware = createSagaMiddleware()
 
 import MenuInfinity from './MenuInfinity'
-import {spreadLists, inity} from './utils'
+import {inity} from './utils'
 
 const logger = createLogger()
 
@@ -28,17 +28,9 @@ export default class MenuInfinityContainer extends React.Component {
   constructor(props) {
     super(props)
 
-
-
-
     inity.items = this.props.items
     inity.ruleStructure = this.props.initStructureByRule
     const initialState = inity(this.props.list)
-
-
-
-    console.log(initialState)
-
 
     const middleware = [sagaMiddleware]
 

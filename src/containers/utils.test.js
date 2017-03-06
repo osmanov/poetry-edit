@@ -81,6 +81,11 @@ const items={
     id:162,
     label: <span>DAN</span>,
     className:'item',
+  },
+  8080:{
+    id:8080,
+    label: <span>google</span>,
+    className:'item',
   }
 }
 
@@ -91,7 +96,18 @@ const inputData={
   axis:'x',
   items:[
     {
-      id: 0
+      id: 0,
+      list:{
+        id:'l59',
+        className:'menuContainer2',
+        volume:'up',
+        axis:'y',
+        items:[
+          {
+            id:8080
+          }
+        ]
+      }
     },
     {
       id: 1
@@ -192,6 +208,7 @@ function helper(sliceItems){
 test('inity result relation.itemList', t => {
   const {relations:{itemList}}=macro()
   t.deepEqual(itemList,{
+    0:'l59',
     7:2,
     6:125,
     16:225,
@@ -204,6 +221,7 @@ test('inity result relation.itemList', t => {
 test('inity result relation.listItem', t => {
   const {relations:{listItem}}=macro()
   t.deepEqual(listItem,{
+    'l59':0,
     2:7,
     125:6,
     225:16,
@@ -223,6 +241,16 @@ test('inity result relation.listLists with initStructureByRule', t => {
   })
 })
 
+test('inity result relation.listLists with multi initStructureByRule', t => {
+  const {relations:{listLists}}=macro(item => (item.id == 162 || item.id == 36))
+  t.deepEqual(listLists,{
+    0:[2,125,225],
+    2:[125,225],
+    125:[225],
+    225:[]
+  })
+})
+
 
 test('inity result relation.listLists', t => {
   const {relations:{listLists}}=macro()
@@ -239,7 +267,7 @@ test('inity result items', t => {
 
 test('inity result lists', t => {
   const {lists}=macro()
-  t.is(Object.keys(lists).length,7)
+  t.is(Object.keys(lists).length,8)
 
   t.deepEqual(lists[0],{
     className:'menuContainer',
@@ -324,6 +352,35 @@ test('inity result structure with initStructureByRule', t => {
   t.is(structure.exciterItem.list.exciterItem.list.exciterItem.list.exciterItem,null)
 })
 
+function checkListItemsClassNames(list){
+  const rule=item=>{
+    return item.id === 162 ? item.className === 'item item-active' : (item.className === 'item' || item.className === 'item1')
+  }
+
+  for(let i=0;i<list.items.length;i++){
+    if(!rule(list.items[i]))return false
+  }
+  return true
+}
+
+test('inity result structure active className with initStructureByRule', t => {
+  let {structure}=macro(item => item.id === 162)
+  while(structure.exciterItem){
+    t.truthy(checkListItemsClassNames(structure))
+    structure=structure.exciterItem.list
+    if(structure.exciterItem===null){
+      t.truthy(checkListItemsClassNames(structure))
+    }
+  }
+})
+
+test('inity result lists active className with initStructureByRule', t => {
+  let {lists}=macro(item => item.id === 162)
+  Object.keys(lists).forEach(listId=>{
+    t.truthy(checkListItemsClassNames(lists[listId]))
+  })
+})
+
 test('inity result structure', t => {
   const {structure}=macro()
   t.deepEqual(structure,{
@@ -336,6 +393,7 @@ test('inity result structure', t => {
     items: inputData.items.map(item=>({...item, ...items[item.id]}))
   })
 })
+
 
 
 
