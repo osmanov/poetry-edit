@@ -120,6 +120,7 @@ class EditorMenu extends React.Component {
     if (!menu || state.isBlurred || state.isCollapsed) return
     const rect = position()
     menu.style.top = `${rect.bottom + window.scrollY}px`
+    debugger
     menu.style.left = `${rect.left + window.scrollX - menu.offsetWidth / 2 + rect.width / 2}px`
   }
 

@@ -23,20 +23,31 @@ class MenuItem extends React.Component {
     })
   }
 
-  _onMouseLeave=()=>{
+  _onMouseLeave=(e)=>{
 //TODO from here parent siblings should listen
+    e.preventDefault()
+    e.persist()
+    e.stopPropagation()
+
+    console.log(e.target)
+
+    if(!this.props.children || e.target.tagName === 'UL')return
+
+    // console.log(e.target.tagName)
+    // console.log('LEAVE')
+
     this.setState({
-    //  show:false
+     show:false
     })
   }
 
-  shouldComponentUpdate(nextProps, nextState){
+  /*shouldComponentUpdate(nextProps, nextState){
     console.log('-------')
     console.log('next-->'+nextState.show)
     console.log('this-->'+this.state.show)
     console.log('-------')
     return !(nextState.show===this.state.show)
-  }
+  }*/
 
   render() {
     const { onMouseDown, label, className} = this.props

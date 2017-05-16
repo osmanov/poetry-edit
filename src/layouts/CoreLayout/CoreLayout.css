@@ -1,8 +1,39 @@
 .menuContainer{
-  background: red;
-  border: 2px solid green;
-  border-radius: 0 0 4px 4px;
-  box-shadow: 1px 2px 9px 0px rgba(50, 50, 50, 0.45);
+  background: #fff;
+  box-shadow: 1px 1px 5px 0px rgba(0,0,0,0.44);
+  border-top:1px solid #f2f2f2;
+  border-left:1px solid #f2f2f2;
+  border-bottom:1px solid #f2f2f2;
+}
+.menuContainer2{
+  box-shadow: 1px 3px 5px 0px rgba(0,0,0,0.44);
+
+  background: #fff;
+  border-right:1px solid #f2f2f2;
+  border-left:1px solid #f2f2f2;
+  border-bottom:1px solid #f2f2f2;
+}
+
+.menuContainer3{
+  box-shadow: -2px 3px 5px 0px rgba(0,0,0,0.44);
+
+  background: #fff;
+  border-right:1px solid #f2f2f2;
+  border-left:1px solid #f2f2f2;
+  border-bottom:1px solid #f2f2f2;
+}
+
+.item{
+  padding: 11px 15px;
+  border-right:1px solid #f2f2f2;
+}
+.item-active,.item1-active{
+  background: #f4f4f4;
+}
+.item1{
+  padding: 11px 15px;
+  border-top:1px solid #f2f2f2;
+
 }
 
 

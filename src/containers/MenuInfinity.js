@@ -74,7 +74,8 @@ const mapStateToProps = state => {
     relationListLists:state.relations.listLists,
     structure: state.structure,
     lists: state.lists,
-    currentEvent: state.currentEvent
+    currentEvent: state.currentEvent,
+    multiInitializer: state.multiInitializer//TODO from here common set common chunks for single render
 
   }
 }
@@ -107,12 +108,12 @@ class MenuInfinity extends React.Component{
   _currentEl=null
 
   _mouseOver=(e)=>{
-    console.log('-----------')
-    console.log('_mouseOver')
-    console.log('-----------')
-    console.log('target-->')
-    console.log(e.target)
-    console.log('this._currentEl BEFORE-->')
+    // console.log('-----------')
+    // console.log('_mouseOver')
+    // console.log('-----------')
+    // console.log('target-->')
+    // console.log(e.target)
+    // console.log('this._currentEl BEFORE-->')
     //console.log(this._currentEl)
 
     if(this._currentEl) return
@@ -130,13 +131,13 @@ class MenuInfinity extends React.Component{
       target=target.parentNode
     }
     if (target === this.menuEl){
-      console.log('while target is ROOT div')
+     // console.log('while target is ROOT div')
       return
     }
 
     this._currentEl = target
-    console.log('this._currentEl AFTER-->')
-    console.log(this._currentEl)
+    // console.log('this._currentEl AFTER-->')
+    // console.log(this._currentEl)
 
 
     //TODO move to utils
@@ -179,28 +180,28 @@ class MenuInfinity extends React.Component{
   }
 
   _mouseOut=(e)=>{
-    console.log('-----------')
-    console.log('_mouseOut')
-    console.log('-----------')
-    console.log('target-->')
-    console.log(e.target)
-    console.log('relatedTarget BEFORE-->')
-    console.log(e.relatedTarget)
-    console.log('this._currentEl-->')
-    console.log(this._currentEl)
+    // console.log('-----------')
+    // console.log('_mouseOut')
+    // console.log('-----------')
+    // console.log('target-->')
+    // console.log(e.target)
+    // console.log('relatedTarget BEFORE-->')
+    // console.log(e.relatedTarget)
+    // console.log('this._currentEl-->')
+    // console.log(this._currentEl)
 
     if(!this._currentEl) return
     let relatedTarget=e.relatedTarget
     if(relatedTarget){
       while (relatedTarget){
         if(relatedTarget === this._currentEl){
-          console.log('relatedTarget === this._currentEl')
-          console.log('and this._currentEl is:')
-          console.log(this._currentEl)
+          // console.log('relatedTarget === this._currentEl')
+          // console.log('and this._currentEl is:')
+          // console.log(this._currentEl)
           return
         }
         if(relatedTarget.tagName === 'UL'){
-          console.log('relatedTarget === UL')
+          //console.log('relatedTarget === UL')
           break
         }
 
@@ -209,7 +210,7 @@ class MenuInfinity extends React.Component{
     }
 
     this._currentEl=null
-    console.log('this._currentEl === null')
+    // console.log('this._currentEl === null')
   }
 
   _parseDataset(el){
@@ -287,8 +288,9 @@ class MenuInfinity extends React.Component{
   }
 
   render(){
-    const {structure}=this.props
-
+    const {structure,multiInitializer}=this.props
+console.log(this.props.multiInitializer)
+    
     return <div ref={ comp => { this.menuEl = comp }} >
       {this._getList(structure,true)}
     </div>

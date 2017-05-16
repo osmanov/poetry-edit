@@ -31,7 +31,7 @@ export default class MenuInfinityContainer extends React.Component {
     inity.items = this.props.items
     inity.ruleStructure = this.props.initStructureByRule
     const initialState = inity(this.props.list)
-
+console.log(initialState)
     const middleware = [sagaMiddleware]
 
     //if (__DEV__) {

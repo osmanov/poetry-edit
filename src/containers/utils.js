@@ -1,5 +1,5 @@
 let items=null
-import {fromJS} from 'immutable'
+import {fromJS,Set,Map,isCollection,List} from 'immutable'
 
 
 function floatUntilRootList(list,res){
@@ -32,10 +32,21 @@ export function inity(currentListSection, result = null){
       structure: {
         ...blankList,
         exciterItem: null
-      }
+      },
+      multiInitializer:null
+      /*multiInitializer:{
+        relations:{
+          listLists: [{[blankList.id]:[]}]
+        },
+        structure:[{
+          ...blankList,
+          exciterItem: null
+        }]
+      }*/
     }
   }
 
+  let flag=false
   for (let j = 0; j < currentListSection.items.length; j++) { //items
     const item = currentListSection.items[j]
     if (item.list) {
@@ -52,6 +63,9 @@ export function inity(currentListSection, result = null){
 
           let structure = {structure: Object.assign({}, result.structure)}
 
+
+
+
           if(typeof inity.ruleStructure === "function"){
             for (let k = 0,listsItems=[...lists.lists[item.list.id].items]; k < listsItems.length; k++) {
               if (inity.ruleStructure({...listsItems[k]})) {// TODO if key `list` exists  remove it from argument
@@ -65,6 +79,13 @@ export function inity(currentListSection, result = null){
 // debugger
                 console.log(listList)
                 relationsListLists.listLists = listList
+
+                if(!result.multiInitializer){
+                  result.multiInitializer=[]
+                }
+                let multiInitializer={
+                  listLists: relationsListLists.listLists
+                }
 
 
                 const itList=orderLists.slice(1)
@@ -86,20 +107,49 @@ export function inity(currentListSection, result = null){
                     }
                   }
 
-
-                  const newMap=fromJS({
+                  const map=fromJS({
                     list:structure.structure
-                  }).setIn(keyPath.trim().split(' '), exciter)
-                  keyPath+='list exciterItem '
+                  }).getIn(keyPath.trim().split(' '))
+if(flag){
+  debugger
+}
+                  let newMap
+
+                  if(map){//repeat
+                    if(!Array.isArray(map.toJS())){//firstrepeat
+                      flag=true
+                      newMap=fromJS({
+                        list:structure.structure
+                      }).setIn(keyPath.trim().split(' '), [map.toJS(),exciter])
+                      //debugger
+                      //TODO set keypath by index list collection from here
+                      keyPath+=`list exciterItem `
+                    }else{//TODO PUSH to exciter by you need to underdstand current and deep
+debugger
+                    }
+
+                  }else{
+                    newMap=fromJS({
+                      list:structure.structure
+                    }).setIn(keyPath.trim().split(' '), exciter)
+                    keyPath+='list exciterItem '
+                  }
+
+
                   structure.structure=newMap.toJS().list
                 }
+                multiInitializer.structure=structure.structure
+                result.multiInitializer.push(multiInitializer)
+
                 break
               }
             }
 
           }
+
           const relations = {relations: {...relationsItemList,...relationsListLists,...relationsListItem}}
-          result = inity(item.list, {...lists,...relations,...structure})
+
+          result = inity(item.list, {...lists,...relations,...structure,multiInitializer:result.multiInitializer||null})
         }
       }
     }

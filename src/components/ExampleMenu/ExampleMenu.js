@@ -66,13 +66,11 @@ const list ={
   axis:'x',
   items: [
     {
-      id: 0
-    },
-    {
       id: 8
     },
     {
       id: 2,
+
       list: {
         id:'L1',
         className:'menuContainer2',
@@ -80,7 +78,19 @@ const list ={
         axis:'y',
         items:[
           {
-            id: 3
+            id: 3,
+            list:{
+              id:'L520',
+              className:'menuContainer2',
+              volume:'up',
+              axis:'x',
+              items:[
+                {
+                  id:0
+                }
+              ]
+            }
+
           },
           {
             id: 4,
@@ -99,6 +109,8 @@ const list ={
                     axis:'y',
                     items:[
                       {
+                        id: 1
+                      },{
                         id: 6
                       }
                     ]
@@ -142,9 +154,9 @@ class ExampleMenu extends React.Component {
     return state.marks.some(mark => mark.type == type)
   }
 
-  onClickMark = (e, item) => {
+  onClickMark = (e, item,list) => {
     let { state } = this.state
-
+console.log(item)
     if(item.mark){
       state = state
         .transform()
@@ -157,13 +169,39 @@ class ExampleMenu extends React.Component {
     }
   }
 
+
+
   renderMenu = () => {
     const { state:{isBlurred, isCollapsed} } = this.state
     const isOpened=!(isBlurred || isCollapsed)
 
     return (
       <Portal isOpened={isOpened} onOpen={this.onOpen}>
-        <MenuInfinityContainer list={list} items={items} itemOnClick={this.onClickMark}/>
+        <MenuInfinityContainer
+          initStructureByRule={(itemWithList)=>{
+            // if selected=> to init structure
+
+//console.log(itemWithList)
+//console.log(itemWithList.mark)
+//console.log(this._hasMark(itemWithList.mark))
+
+  return itemWithList.mark? this._hasMark(itemWithList.mark):false
+
+            return true //TODO or false
+          }}
+          selectItemRule={(item,list)=>{//TODO THINK ABOUT IT cause our item can be custom...
+          //set selected/unselected  rule in spreadLIst before initStructure
+            /*
+            * maybe here we will have couple of rules
+             * if item has mark one rule
+             * if it doesn't have it means that is custom and another rule..
+            * */
+            return true //TODO or false
+          }}
+          list={list}
+          items={items}
+          structureOnUpdate={()=>{}}
+          itemOnClick={this.onClickMark}/>
       </Portal>
     )
   }
