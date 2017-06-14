@@ -93,6 +93,7 @@ module.exports = {
     host:'0.0.0.0',
     port:project.server_port,
     contentBase: project.paths.dist(),
+    disableHostCheck: true,
     historyApiFallback: {
       index: project.compiler_public_path
     }
