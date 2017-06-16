@@ -289,8 +289,8 @@ class MenuInfinity extends React.Component{
 
   render(){
     const {structure,multiInitializer}=this.props
-console.log(this.props.multiInitializer)
-    
+// console.log(this.props.multiInitializer)
+
     return <div ref={ comp => { this.menuEl = comp }} >
       {this._getList(structure,true)}
     </div>
