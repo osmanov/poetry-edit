@@ -115,7 +115,7 @@ if(flag){
 }
                   let newMap
 
-                  if(map){//repeat
+                 /* if(map){//repeat
                     if(!Array.isArray(map.toJS())){//firstrepeat
                       flag=true
                       newMap=fromJS({
@@ -133,8 +133,11 @@ debugger
                       list:structure.structure
                     }).setIn(keyPath.trim().split(' '), exciter)
                     keyPath+='list exciterItem '
-                  }
-
+                  }*/
+                  newMap=fromJS({
+                    list:structure.structure
+                  }).setIn(keyPath.trim().split(' '), exciter)
+                  keyPath+='list exciterItem '
 
                   structure.structure=newMap.toJS().list
                 }
